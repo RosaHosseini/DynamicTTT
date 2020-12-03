@@ -81,7 +81,7 @@ digraph g {
 	s6 -> s3 [label="8"];
 	s6 -> s8 [label="9"];
 	s7 -> s0 [label="0"];
-	s7 -> s0 [label="1"];
+	s7 -> s2 [label="1"];
 	s7 -> s1 [label="2"];
 	s7 -> s2 [label="3"];
 	s7 -> s0 [label="4"];

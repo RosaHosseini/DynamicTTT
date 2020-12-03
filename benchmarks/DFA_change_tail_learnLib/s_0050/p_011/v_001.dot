@@ -153,7 +153,7 @@ digraph g {
 	s10 -> s41 [label="0"];
 	s10 -> s38 [label="1"];
 	s10 -> s0 [label="2"];
-	s10 -> s47 [label="3"];
+	s10 -> s28 [label="3"];
 	s10 -> s43 [label="4"];
 	s10 -> s43 [label="5"];
 	s10 -> s46 [label="6"];

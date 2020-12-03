@@ -34,7 +34,7 @@
 3 -- 8 / false -> 8
 3 -- 2 / false -> 2
 3 -- 6 / false -> 6
-3 -- 7 / false -> 7
+3 -- 4 / false -> 4
 3 -- 5 / false -> 5
 3 -- 4 / false -> 4
 3 -- 5 / false -> 5

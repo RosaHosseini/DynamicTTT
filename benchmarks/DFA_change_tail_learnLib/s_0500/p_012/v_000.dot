@@ -3441,7 +3441,7 @@ digraph g {
 	s293 -> s246 [label="8"];
 	s293 -> s490 [label="9"];
 	s294 -> s56 [label="0"];
-	s294 -> s477 [label="1"];
+	s294 -> s279 [label="1"];
 	s294 -> s390 [label="2"];
 	s294 -> s363 [label="3"];
 	s294 -> s50 [label="4"];

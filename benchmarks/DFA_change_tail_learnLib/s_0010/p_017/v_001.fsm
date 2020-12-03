@@ -81,7 +81,7 @@
 8 -- 0 / true -> 0
 8 -- 2 / false -> 2
 8 -- 3 / false -> 3
-8 -- 3 / false -> 3
+8 -- 1 / false -> 1
 8 -- 1 / false -> 1
 8 -- 6 / false -> 6
 8 -- 5 / false -> 5

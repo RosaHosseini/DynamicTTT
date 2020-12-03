@@ -1030,7 +1030,7 @@ digraph g {
 	s92 -> s98 [label="7"];
 	s92 -> s17 [label="8"];
 	s92 -> s53 [label="9"];
-	s93 -> s25 [label="0"];
+	s93 -> s67 [label="0"];
 	s93 -> s29 [label="1"];
 	s93 -> s65 [label="2"];
 	s93 -> s91 [label="3"];

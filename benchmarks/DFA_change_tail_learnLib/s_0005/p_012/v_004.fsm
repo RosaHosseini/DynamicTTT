@@ -19,7 +19,7 @@
 1 -- 1 / false -> 1
 1 -- 2 / false -> 2
 2 -- 4 / false -> 4
-2 -- 0 / true -> 0
+2 -- 3 / false -> 3
 2 -- 0 / true -> 0
 2 -- 1 / false -> 1
 2 -- 1 / false -> 1

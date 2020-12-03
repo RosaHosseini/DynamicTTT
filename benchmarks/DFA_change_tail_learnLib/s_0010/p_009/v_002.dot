@@ -105,7 +105,7 @@ digraph g {
 	s9 -> s7 [label="2"];
 	s9 -> s0 [label="3"];
 	s9 -> s5 [label="4"];
-	s9 -> s1 [label="5"];
+	s9 -> s6 [label="5"];
 	s9 -> s0 [label="6"];
 	s9 -> s2 [label="7"];
 	s9 -> s3 [label="8"];

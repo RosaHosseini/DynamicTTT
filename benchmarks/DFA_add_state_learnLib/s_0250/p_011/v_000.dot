@@ -250,7 +250,6 @@ digraph g {
 	s247 [shape="doublecircle" label="247"];
 	s248 [shape="doublecircle" label="248"];
 	s249 [shape="circle" label="249"];
-	s250 [shape="circle" label="250"];
 	s0 -> s1 [label="0"];
 	s0 -> s0 [label="1"];
 	s0 -> s2 [label="2"];
@@ -2562,7 +2561,7 @@ digraph g {
 	s230 -> s120 [label="8"];
 	s230 -> s185 [label="9"];
 	s231 -> s106 [label="0"];
-	s231 -> s250 [label="1"];
+	s231 -> s157 [label="1"];
 	s231 -> s25 [label="2"];
 	s231 -> s227 [label="3"];
 	s231 -> s154 [label="4"];
@@ -2751,16 +2750,6 @@ digraph g {
 	s249 -> s114 [label="7"];
 	s249 -> s171 [label="8"];
 	s249 -> s2 [label="9"];
-	s250 -> s88 [label="0"];
-	s250 -> s83 [label="1"];
-	s250 -> s110 [label="2"];
-	s250 -> s100 [label="3"];
-	s250 -> s96 [label="4"];
-	s250 -> s129 [label="5"];
-	s250 -> s65 [label="6"];
-	s250 -> s118 [label="7"];
-	s250 -> s181 [label="8"];
-	s250 -> s152 [label="9"];
 
 __start0 [label="" shape="none" width="0" height="0"];
 __start0 -> s0;

@@ -12,6 +12,10 @@ import net.automatalib.words.*;
 import net.automatalib.words.impl.FastAlphabet;
 import net.automatalib.words.impl.Symbol;
 
+/**
+ * An abstract class to initialize our benchmark
+ * here we create the DFA of random SULs and new versions of them
+ **/
 public abstract class DFAGenerator {
     private final String[] ALL_NUM_STATES;
     private final int ALPHABET_RANGE;
@@ -19,6 +23,13 @@ public abstract class DFAGenerator {
     private final int NUM_VERSION;
     private final String PATH;
 
+    /**
+     * @param all_num_states is a list contains the number of states of generated DFAs (SULs)
+     * @param alphabet_range shows the number of alphabets in generated DFAs (SULs)s
+     * @param num_dfa        shows number of SULs.
+     * @param num_version    shows the number of versions for changing each SUL.
+     * @param path           is the path of saving result
+     **/
     protected DFAGenerator(String[] all_num_states, int alphabet_range, int num_dfa, int num_version, String path) {
         NUM_DFA = num_dfa;
         ALL_NUM_STATES = all_num_states;
@@ -28,7 +39,10 @@ public abstract class DFAGenerator {
         execute();
     }
 
-    protected void execute() {
+    /**
+     * create benchmark
+     **/
+    private void execute() {
         try {
             // load mealy machine
 
@@ -59,8 +73,12 @@ public abstract class DFAGenerator {
 
 
                     //generate updated versions
-                    for (int version = 0; version < NUM_VERSION; version++) {
-                        modelEditor = updateModel(modelEditor);
+                    for (int version = 1; version < NUM_VERSION; version++) {
+                        try {
+                            modelEditor = updateModel(modelEditor);
+                        } catch (Exception e) {
+                            break;
+                        }
 
                         writer.log(numStatesStr, i, version, modelEditor.model.getStates().size(), modelEditor.lastOperation);
 
@@ -76,6 +94,9 @@ public abstract class DFAGenerator {
         }
     }
 
+    /**
+     * override this function to specify the change of the new version of SUL's DFA
+     **/
     protected abstract DFAModelEditor updateModel(DFAModelEditor modelEditor) throws Exception;
 
     private FastAlphabet<Symbol> generateAlphabet() {
@@ -86,6 +107,9 @@ public abstract class DFAGenerator {
         return new FastAlphabet<>(outCol);
     }
 
+    /**
+     * save sul with model of @param dfa in a dot file with path @dir
+     **/
     private void saveDot(File dir, CompactDFA<Symbol> dfa) throws IOException {
         // save sul in a dot file
         File sul_model = new File(dir.getParentFile(), dir.getName() + ".dot");
@@ -94,9 +118,10 @@ public abstract class DFAGenerator {
         GraphDOT.write(dfa, abc, fw);
     }
 
-
+    /**
+     * save the sul with model of @param dfa in a fsm file with path @dir
+     **/
     private void saveDFA(File fsm, CompactDFA<Symbol> dfa) throws IOException {
-        // save sul as in a fsm file (i.e., mealyss)
         File sul_model = new File(fsm.getParentFile(), fsm.getName() + ".fsm");
         FileWriter fw = new FileWriter(sul_model);
 

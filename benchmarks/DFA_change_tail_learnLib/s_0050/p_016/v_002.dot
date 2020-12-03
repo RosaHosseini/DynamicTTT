@@ -145,7 +145,7 @@ digraph g {
 	s9 -> s44 [label="2"];
 	s9 -> s46 [label="3"];
 	s9 -> s1 [label="4"];
-	s9 -> s27 [label="5"];
+	s9 -> s5 [label="5"];
 	s9 -> s32 [label="6"];
 	s9 -> s8 [label="7"];
 	s9 -> s26 [label="8"];

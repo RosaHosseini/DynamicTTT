@@ -1,2 +1,10 @@
 0 -- 1 / false -> 1
+0 -- 1 / false -> 1
 1 -- 0 / true -> 0
+1 -- 2 / false -> 2
+2 -- 1 / false -> 1
+2 -- 3 / false -> 3
+3 -- 0 / true -> 0
+3 -- 4 / false -> 4
+4 -- 4 / false -> 4
+4 -- 2 / false -> 2

@@ -840,7 +840,7 @@ digraph g {
 	s73 -> s51 [label="7"];
 	s73 -> s68 [label="8"];
 	s73 -> s28 [label="9"];
-	s74 -> s24 [label="0"];
+	s74 -> s50 [label="0"];
 	s74 -> s74 [label="1"];
 	s74 -> s8 [label="2"];
 	s74 -> s37 [label="3"];

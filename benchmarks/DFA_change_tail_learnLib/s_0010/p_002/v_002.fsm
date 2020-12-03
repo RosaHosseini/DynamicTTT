@@ -93,7 +93,7 @@
 9 -- 7 / false -> 7
 9 -- 0 / true -> 0
 9 -- 5 / false -> 5
-9 -- 1 / false -> 1
+9 -- 6 / false -> 6
 9 -- 0 / true -> 0
 9 -- 2 / false -> 2
 9 -- 3 / false -> 3

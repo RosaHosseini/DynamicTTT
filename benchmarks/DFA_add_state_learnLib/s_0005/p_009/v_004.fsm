@@ -80,7 +80,7 @@
 7 -- 8 / false -> 8
 8 -- 4 / false -> 4
 8 -- 5 / false -> 5
-8 -- 9 / false -> 9
+8 -- 2 / false -> 2
 8 -- 0 / true -> 0
 8 -- 2 / false -> 2
 8 -- 7 / false -> 7
@@ -88,13 +88,3 @@
 8 -- 0 / true -> 0
 8 -- 4 / false -> 4
 8 -- 6 / false -> 6
-9 -- 8 / false -> 8
-9 -- 7 / false -> 7
-9 -- 3 / false -> 3
-9 -- 8 / false -> 8
-9 -- 4 / false -> 4
-9 -- 7 / false -> 7
-9 -- 1 / false -> 1
-9 -- 5 / false -> 5
-9 -- 2 / false -> 2
-9 -- 3 / false -> 3

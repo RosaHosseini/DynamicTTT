@@ -130,7 +130,7 @@ digraph g {
 	s7 -> s42 [label="7"];
 	s7 -> s30 [label="8"];
 	s7 -> s40 [label="9"];
-	s8 -> s3 [label="0"];
+	s8 -> s27 [label="0"];
 	s8 -> s28 [label="1"];
 	s8 -> s7 [label="2"];
 	s8 -> s43 [label="3"];

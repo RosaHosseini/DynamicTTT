@@ -78,7 +78,7 @@
 7 -- 7 / false -> 7
 7 -- 0 / true -> 0
 7 -- 1 / false -> 1
-8 -- 6 / false -> 6
+8 -- 0 / true -> 0
 8 -- 2 / false -> 2
 8 -- 6 / false -> 6
 8 -- 6 / false -> 6

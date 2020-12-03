@@ -2480,7 +2480,7 @@ digraph g {
 	s197 -> s486 [label="7"];
 	s197 -> s396 [label="8"];
 	s197 -> s430 [label="9"];
-	s198 -> s346 [label="0"];
+	s198 -> s324 [label="0"];
 	s198 -> s39 [label="1"];
 	s198 -> s438 [label="2"];
 	s198 -> s165 [label="3"];

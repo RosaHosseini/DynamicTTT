@@ -77,14 +77,4 @@
 7 -- 4 / false -> 4
 7 -- 3 / false -> 3
 7 -- 0 / true -> 0
-7 -- 8 / false -> 8
-8 -- 4 / false -> 4
-8 -- 5 / false -> 5
-8 -- 2 / false -> 2
-8 -- 0 / true -> 0
-8 -- 2 / false -> 2
-8 -- 7 / false -> 7
-8 -- 1 / false -> 1
-8 -- 0 / true -> 0
-8 -- 4 / false -> 4
-8 -- 6 / false -> 6
+7 -- 1 / false -> 1

@@ -371,7 +371,7 @@ digraph g {
 	s26 -> s29 [label="8"];
 	s26 -> s12 [label="9"];
 	s27 -> s1 [label="0"];
-	s27 -> s81 [label="1"];
+	s27 -> s87 [label="1"];
 	s27 -> s96 [label="2"];
 	s27 -> s91 [label="3"];
 	s27 -> s19 [label="4"];

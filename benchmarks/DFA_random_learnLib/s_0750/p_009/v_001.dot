@@ -4660,7 +4660,7 @@ digraph g {
 	s390 -> s106 [label="7"];
 	s390 -> s558 [label="8"];
 	s390 -> s600 [label="9"];
-	s391 -> s262 [label="0"];
+	s391 -> s3 [label="0"];
 	s391 -> s712 [label="1"];
 	s391 -> s392 [label="2"];
 	s391 -> s569 [label="3"];

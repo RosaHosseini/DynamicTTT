@@ -1311,7 +1311,7 @@ digraph g {
 	s105 -> s66 [label="8"];
 	s105 -> s68 [label="9"];
 	s106 -> s90 [label="0"];
-	s106 -> s109 [label="1"];
+	s106 -> s21 [label="1"];
 	s106 -> s166 [label="2"];
 	s106 -> s6 [label="3"];
 	s106 -> s39 [label="4"];

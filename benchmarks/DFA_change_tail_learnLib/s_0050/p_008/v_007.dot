@@ -236,7 +236,7 @@ digraph g {
 	s18 -> s10 [label="3"];
 	s18 -> s39 [label="4"];
 	s18 -> s2 [label="5"];
-	s18 -> s30 [label="6"];
+	s18 -> s40 [label="6"];
 	s18 -> s35 [label="7"];
 	s18 -> s48 [label="8"];
 	s18 -> s49 [label="9"];

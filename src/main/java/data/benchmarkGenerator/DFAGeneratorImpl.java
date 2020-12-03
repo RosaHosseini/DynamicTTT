@@ -80,11 +80,11 @@ class DFAGeneratorRemoveAlphabet extends DFAGenerator {
     }
 
     @Override
-    protected DFAModelEditor updateModel(DFAModelEditor modelEditor) {
+    protected DFAModelEditor updateModel(DFAModelEditor modelEditor) throws Exception {
         if (modelEditor.model.getInputAlphabet().size() >= 2) {
             modelEditor.removeAlphabet();
-        }
-        return modelEditor;
+            return modelEditor;
+        } else throw new Exception("The alphabet size is too low");
     }
 
 
@@ -163,10 +163,10 @@ class DFAGeneratorRandom extends DFAGenerator {
 class Main {
     public static void main(String[] args) {
         new DFAGeneratorRandom();
-//        new DFAGeneratorAddState();
-//        new DFAGeneratorAddAlphabet();
-//        new DFAGeneratorChangeTail();
-//        new DFAGeneratorRemoveAlphabet();
+        new DFAGeneratorAddState();
+        new DFAGeneratorAddAlphabet();
+        new DFAGeneratorChangeTail();
+        new DFAGeneratorRemoveAlphabet();
 //        new DFAGeneratorRemoveState();
     }
 }

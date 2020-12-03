@@ -2551,7 +2551,7 @@ digraph g {
 	s229 -> s183 [label="8"];
 	s229 -> s227 [label="9"];
 	s230 -> s242 [label="0"];
-	s230 -> s192 [label="1"];
+	s230 -> s63 [label="1"];
 	s230 -> s27 [label="2"];
 	s230 -> s116 [label="3"];
 	s230 -> s142 [label="4"];

@@ -631,7 +631,7 @@ digraph g {
 	s52 -> s6 [label="8"];
 	s52 -> s50 [label="9"];
 	s53 -> s6 [label="0"];
-	s53 -> s70 [label="1"];
+	s53 -> s1 [label="1"];
 	s53 -> s49 [label="2"];
 	s53 -> s80 [label="3"];
 	s53 -> s3 [label="4"];

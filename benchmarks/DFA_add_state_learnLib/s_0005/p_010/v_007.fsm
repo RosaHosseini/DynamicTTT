@@ -97,7 +97,7 @@
 9 -- 1 / false -> 1
 9 -- 0 / true -> 0
 9 -- 4 / false -> 4
-9 -- 12 / false -> 12
+9 -- 6 / false -> 6
 10 -- 11 / false -> 11
 10 -- 6 / false -> 6
 10 -- 0 / true -> 0
@@ -118,13 +118,3 @@
 11 -- 5 / false -> 5
 11 -- 2 / false -> 2
 11 -- 3 / false -> 3
-12 -- 8 / false -> 8
-12 -- 8 / false -> 8
-12 -- 6 / false -> 6
-12 -- 6 / false -> 6
-12 -- 2 / false -> 2
-12 -- 5 / false -> 5
-12 -- 5 / false -> 5
-12 -- 3 / false -> 3
-12 -- 4 / false -> 4
-12 -- 5 / false -> 5
