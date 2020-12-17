@@ -1,20 +1,18 @@
 package data.benchmarkGenerator;
 
-
 import data.DFAModelEditor;
+import data.utils.DFAConstants;
 
 import java.util.Random;
 
 class DFAGeneratorAddState extends DFAGenerator {
 
     DFAGeneratorAddState() {
-        super(
-                new String[]{"0005", "0010", "0050", "0100", "0250", "0500", "750", "1000"},
-                10,
-                20,
-                10,
-                "./benchmarks/DFA_add_state_learnLib"
-        );
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_add_state_learnLib");
     }
 
     @Override
@@ -28,18 +26,17 @@ class DFAGeneratorAddState extends DFAGenerator {
 class DFAGeneratorRemoveState extends DFAGenerator {
 
     DFAGeneratorRemoveState() {
-        super(
-                new String[]{"0005", "0010", "0050", "0100", "0250", "0500", "750", "1000"},
-                10,
-                20,
-                10,
-                "./benchmarks/DFA_remove_state_learnLib"
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_remove_state_learnLib"
         );
     }
 
     @Override
     protected DFAModelEditor updateModel(DFAModelEditor modelEditor) throws Exception {
-        if (modelEditor.model.getStates().size() >= 2) {
+        if (modelEditor.getModel().getStates().size() >= 2) {
             modelEditor.removeState();
             return modelEditor;
         } else throw new Exception("model cannot remove more state!");
@@ -50,12 +47,11 @@ class DFAGeneratorRemoveState extends DFAGenerator {
 class DFAGeneratorAddAlphabet extends DFAGenerator {
 
     DFAGeneratorAddAlphabet() {
-        super(
-                new String[]{"0005", "0010", "0050", "0100", "0250", "0500", "750", "1000"},
-                10,
-                20,
-                10,
-                "./benchmarks/DFA_add_alphabet_learnLib"
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_add_alphabet_learnLib"
         );
     }
 
@@ -70,18 +66,17 @@ class DFAGeneratorAddAlphabet extends DFAGenerator {
 class DFAGeneratorRemoveAlphabet extends DFAGenerator {
 
     DFAGeneratorRemoveAlphabet() {
-        super(
-                new String[]{"0005", "0010", "0050", "0100", "0250", "0500", "750", "1000"},
-                10,
-                20,
-                10,
-                "./benchmarks/DFA_remove_alphabet_learnLib"
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_remove_alphabet_learnLib"
         );
     }
 
     @Override
     protected DFAModelEditor updateModel(DFAModelEditor modelEditor) throws Exception {
-        if (modelEditor.model.getInputAlphabet().size() >= 2) {
+        if (modelEditor.getModel().getInputAlphabet().size() >= 2) {
             modelEditor.removeAlphabet();
             return modelEditor;
         } else throw new Exception("The alphabet size is too low");
@@ -93,12 +88,11 @@ class DFAGeneratorRemoveAlphabet extends DFAGenerator {
 class DFAGeneratorChangeTail extends DFAGenerator {
 
     DFAGeneratorChangeTail() {
-        super(
-                new String[]{"0005", "0010", "0050", "0100", "0250", "0500", "750", "1000"},
-                10,
-                20,
-                10,
-                "./benchmarks/DFA_change_tail_learnLib"
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_change_tail_learnLib"
         );
     }
 
@@ -114,12 +108,11 @@ class DFAGeneratorRandom extends DFAGenerator {
     private final static Random rand = new Random(System.currentTimeMillis());
 
     DFAGeneratorRandom() {
-        super(
-                new String[]{"0005", "0010", "0050", "0100", "0250", "0500", "750", "1000"},
-                10,
-                20,
-                10,
-                "./benchmarks/DFA_random_learnLib"
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_random_learnLib"
         );
     }
 
@@ -133,7 +126,7 @@ class DFAGeneratorRandom extends DFAGenerator {
                 modelEditor.addState();
                 break;
             case 4: // remove existing state
-                if (modelEditor.model.getStates().size() < 2) {
+                if (modelEditor.getModel().getStates().size() < 2) {
                     return updateModel(modelEditor);
                 } else {
                     modelEditor.removeState();
@@ -143,7 +136,7 @@ class DFAGeneratorRandom extends DFAGenerator {
                 modelEditor.addAlphabet();
                 break;
             case 3: // remove alphabet
-                if (modelEditor.model.getInputAlphabet().size() < 2) {
+                if (modelEditor.getModel().getInputAlphabet().size() < 2) {
                     return updateModel(modelEditor);
                 } else {
                     modelEditor.removeAlphabet();
@@ -162,12 +155,12 @@ class DFAGeneratorRandom extends DFAGenerator {
 
 class Main {
     public static void main(String[] args) {
-        new DFAGeneratorRandom();
-        new DFAGeneratorAddState();
-        new DFAGeneratorAddAlphabet();
-        new DFAGeneratorChangeTail();
-        new DFAGeneratorRemoveAlphabet();
-//        new DFAGeneratorRemoveState();
+        new DFAGeneratorRandom().generate();
+        new DFAGeneratorAddState().generate();
+        new DFAGeneratorAddAlphabet().generate();
+        new DFAGeneratorChangeTail().generate();
+        new DFAGeneratorRemoveAlphabet().generate();
+//        new DFAGeneratorRemoveState().generate();
     }
 }
 

@@ -36,13 +36,12 @@ public abstract class DFAGenerator {
         ALPHABET_RANGE = alphabet_range;
         NUM_VERSION = num_version;
         PATH = path;
-        execute();
     }
 
     /**
-     * create benchmark
+     * generate benchmark
      **/
-    private void execute() {
+    public void generate() {
         try {
             // load mealy machine
 
@@ -68,8 +67,8 @@ public abstract class DFAGenerator {
                     //save generated dfa
                     File childDir = new File(folder, "p_" + String.format("%03d", i) + "/v_000");
                     childDir.getParentFile().mkdirs();
-                    saveDFA(childDir, modelEditor.model);
-                    saveDot(childDir, modelEditor.model);
+                    saveDFA(childDir, modelEditor.getModel());
+                    saveDot(childDir, modelEditor.getModel());
 
 
                     //generate updated versions
@@ -80,11 +79,11 @@ public abstract class DFAGenerator {
                             break;
                         }
 
-                        writer.log(numStatesStr, i, version, modelEditor.model.getStates().size(), modelEditor.lastOperation);
+                        writer.log(numStatesStr, i, version, modelEditor.getModel().getStates().size(), modelEditor.getLastOperation());
 
                         childDir = new File(folder, "p_" + String.format("%03d", i) + "/v_" + String.format("%03d", version));
-                        saveDFA(childDir, modelEditor.model);
-                        saveDot(childDir, modelEditor.model);
+                        saveDFA(childDir, modelEditor.getModel());
+                        saveDot(childDir, modelEditor.getModel());
                     }
                 }
             }
@@ -108,7 +107,7 @@ public abstract class DFAGenerator {
     }
 
     /**
-     * save sul with model of @param dfa in a dot file with path @dir
+     * save sul with model of @param dfa in a dot file with path @param dir
      **/
     private void saveDot(File dir, CompactDFA<Symbol> dfa) throws IOException {
         // save sul in a dot file
@@ -119,7 +118,7 @@ public abstract class DFAGenerator {
     }
 
     /**
-     * save the sul with model of @param dfa in a fsm file with path @dir
+     * save the sul with model of @param dfa in a fsm file with path @param dir
      **/
     private void saveDFA(File fsm, CompactDFA<Symbol> dfa) throws IOException {
         File sul_model = new File(fsm.getParentFile(), fsm.getName() + ".fsm");
@@ -132,7 +131,6 @@ public abstract class DFAGenerator {
             for (Symbol in : dfa.getInputAlphabet()) {
                 Integer tr = dfa.getTransition(state, in);
                 if (tr != null) {
-
                     fw.append(dfa.getState(state).toString());
                     fw.append(" -- ");
                     fw.append(tr.toString());
@@ -147,36 +145,37 @@ public abstract class DFAGenerator {
         fw.close();
     }
 
+    static class Logger {
+        private final BufferedWriter bw;
+        private boolean isClosed = false;
+
+
+        public Logger(File dir) throws IOException {
+            bw = new BufferedWriter(new FileWriter(new File(dir, "/models.tab")));
+            bw.write("s_id|p_id|v_id|size|operator");
+            bw.write("\n");
+        }
+
+        public void log(String numStatesStr, int i, int version, int updatedNumStates, String operation) throws IOException {
+            if (isClosed)
+                return;
+            bw.write(numStatesStr + "|");
+            bw.write(i + "|");
+            bw.write(version + "|");
+            bw.write(updatedNumStates + "|");
+            bw.write(operation);
+            bw.write("\n");
+        }
+
+        public void close() throws IOException {
+            bw.close();
+            isClosed = true;
+        }
+    }
 
 }
 
-class Logger {
-    private final BufferedWriter bw;
-    private boolean isClosed = false;
 
-
-    public Logger(File dir) throws IOException {
-        bw = new BufferedWriter(new FileWriter(new File(dir, "/models.tab")));
-        bw.write("s_id|p_id|v_id|size|operator");
-        bw.write("\n");
-    }
-
-    public void log(String numStatesStr, int i, int version, int updatedNumStates, String operation) throws IOException {
-        if (isClosed)
-            return;
-        bw.write(numStatesStr + "|");
-        bw.write(i + "|");
-        bw.write(version + "|");
-        bw.write(updatedNumStates + "|");
-        bw.write(operation);
-        bw.write("\n");
-    }
-
-    public void close() throws IOException {
-        bw.close();
-        isClosed = true;
-    }
-}
 
 
 

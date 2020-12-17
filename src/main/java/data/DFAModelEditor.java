@@ -11,21 +11,29 @@ import net.automatalib.words.impl.Alphabets;
 import net.automatalib.words.impl.FastAlphabet;
 import net.automatalib.words.impl.Symbol;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.*;
 
 public class DFAModelEditor {
-    public CompactDFA<Symbol> model;
-    public String lastOperation = "initial-model";
+    private CompactDFA<Symbol> model;
+    private String lastOperation = "initial-model";
 
     private final Random rand = new Random(5678);
-
 
     public DFAModelEditor(CompactDFA<Symbol> dfa) {
         this.model = dfa;
     }
 
+    public CompactDFA<Symbol> getModel() {
+        return model;
+    }
 
+    public String getLastOperation() {
+        return lastOperation;
+    }
+
+    /**
+     * add a new random state to the dfa of model
+     **/
     public void addState() {
         // alphabets
         Alphabet<Symbol> alphabets = model.getInputAlphabet();
@@ -56,7 +64,9 @@ public class DFAModelEditor {
 
     }
 
-    /** remove a random state from the dfa of model **/
+    /**
+     * remove a random state from the dfa of model
+     **/
     public void removeState() {
         // get alphabet
         Alphabet<Symbol> alphabets = model.getInputAlphabet();
@@ -88,6 +98,7 @@ public class DFAModelEditor {
             }
             // get qi
             FastDFAState state_qi = statesMap.get(qi.getId());
+
             // iterate for each alphabet symbol
             for (Symbol in : model.getInputAlphabet()) {
                 //find the in-accessor of state qi and save it in tr
