@@ -1,13 +1,18 @@
 package data.benchmarkGenerator;
 
-import data.DFAModelEditor;
+import data.utils.DFAModelEditor;
 import data.utils.DFAConstants;
 
 import java.util.Random;
 
-class DFAGeneratorAddState extends DFAGenerator {
 
-    DFAGeneratorAddState() {
+/**
+ * Implementation of SUL Generator
+**/
+
+class SULGeneratorAddState extends SULGenerator {
+
+    SULGeneratorAddState() {
         super(DFAConstants.STATES_NUMS,
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
@@ -23,9 +28,9 @@ class DFAGeneratorAddState extends DFAGenerator {
 
 }
 
-class DFAGeneratorRemoveState extends DFAGenerator {
+class SULGeneratorRemoveState extends SULGenerator {
 
-    DFAGeneratorRemoveState() {
+    SULGeneratorRemoveState() {
         super(DFAConstants.STATES_NUMS,
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
@@ -44,9 +49,9 @@ class DFAGeneratorRemoveState extends DFAGenerator {
 
 }
 
-class DFAGeneratorAddAlphabet extends DFAGenerator {
+class SULGeneratorAddAlphabet extends SULGenerator {
 
-    DFAGeneratorAddAlphabet() {
+    SULGeneratorAddAlphabet() {
         super(DFAConstants.STATES_NUMS,
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
@@ -63,9 +68,9 @@ class DFAGeneratorAddAlphabet extends DFAGenerator {
 
 }
 
-class DFAGeneratorRemoveAlphabet extends DFAGenerator {
+class SULGeneratorRemoveAlphabet extends SULGenerator {
 
-    DFAGeneratorRemoveAlphabet() {
+    SULGeneratorRemoveAlphabet() {
         super(DFAConstants.STATES_NUMS,
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
@@ -85,9 +90,9 @@ class DFAGeneratorRemoveAlphabet extends DFAGenerator {
 
 }
 
-class DFAGeneratorChangeTail extends DFAGenerator {
+class SULGeneratorChangeTail extends SULGenerator {
 
-    DFAGeneratorChangeTail() {
+    SULGeneratorChangeTail() {
         super(DFAConstants.STATES_NUMS,
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
@@ -104,10 +109,10 @@ class DFAGeneratorChangeTail extends DFAGenerator {
 }
 
 
-class DFAGeneratorRandom extends DFAGenerator {
+class SULGeneratorRandom extends SULGenerator {
     private final static Random rand = new Random(System.currentTimeMillis());
 
-    DFAGeneratorRandom() {
+    SULGeneratorRandom() {
         super(DFAConstants.STATES_NUMS,
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
@@ -155,14 +160,11 @@ class DFAGeneratorRandom extends DFAGenerator {
 
 class Main {
     public static void main(String[] args) {
-        new DFAGeneratorRandom().generate();
-        new DFAGeneratorAddState().generate();
-        new DFAGeneratorAddAlphabet().generate();
-        new DFAGeneratorChangeTail().generate();
-        new DFAGeneratorRemoveAlphabet().generate();
+        new SULGeneratorRandom().generate();
+        new SULGeneratorAddState().generate();
+        new SULGeneratorAddAlphabet().generate();
+        new SULGeneratorChangeTail().generate();
+        new SULGeneratorRemoveAlphabet().generate();
 //        new DFAGeneratorRemoveState().generate();
     }
 }
-
-
-

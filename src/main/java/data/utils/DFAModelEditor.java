@@ -1,4 +1,4 @@
-package data;
+package data.utils;
 
 import net.automatalib.automata.fsa.impl.FastDFA;
 import net.automatalib.automata.fsa.impl.FastDFAState;
@@ -6,12 +6,20 @@ import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.util.automata.copy.AutomatonCopyMethod;
 import net.automatalib.util.automata.copy.AutomatonLowLevelCopy;
 import net.automatalib.util.automata.minimizer.hopcroft.HopcroftMinimization;
+import net.automatalib.util.automata.random.RandomAutomata;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
 import net.automatalib.words.impl.FastAlphabet;
 import net.automatalib.words.impl.Symbol;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.*;
+
+
+
+/**
+ * Here I get a DFA or generate it
+ * and you can change that DFA by calling my function
+ **/
 
 public class DFAModelEditor {
     private CompactDFA<Symbol> model;
@@ -21,6 +29,15 @@ public class DFAModelEditor {
 
     public DFAModelEditor(CompactDFA<Symbol> dfa) {
         this.model = dfa;
+    }
+
+    /**
+     * @param numStates     The number of states of the DFA model
+     * @param alphabetSize  The size of alphabet of the DFA model
+     * Here the DFAModelEditor class initialize its model with a random DFA
+     */
+    public DFAModelEditor(int numStates, int alphabetSize){
+        model = generateRandomDFA(alphabetSize, numStates);
     }
 
     public CompactDFA<Symbol> getModel() {
@@ -174,7 +191,6 @@ public class DFAModelEditor {
     }
 
     public void changeTail() {
-
         // inputs
         Alphabet<Symbol> alphabets = model.getInputAlphabet();
         // copy the FSM
@@ -203,5 +219,28 @@ public class DFAModelEditor {
             return tr;
         }
         return stateId;
+    }
+
+
+    /**
+     * @param size  The size of the alphabet
+     * @return      an Alphabet with the given size of type Symbol
+     */
+    private FastAlphabet<Symbol> generateAlphabet(int size) {
+        List<Symbol> outCol = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            outCol.add(new Symbol(i));
+        }
+        return new FastAlphabet<>(outCol);
+    }
+
+    /**
+     * @param numStates     The number of states of the DFA
+     * @param alphabetSize  The size of alphabet of the DFA
+     * @return              A random DFA
+     */
+    public CompactDFA<Symbol> generateRandomDFA(int alphabetSize, int numStates){
+        Alphabet<Symbol> alphabets = generateAlphabet(alphabetSize); //alphabet set
+        return RandomAutomata.randomICDFA(rand, numStates, alphabets, true);
     }
 }

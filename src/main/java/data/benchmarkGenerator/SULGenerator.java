@@ -3,20 +3,18 @@ package data.benchmarkGenerator;
 import java.io.*;
 import java.util.*;
 
-import data.DFAModelEditor;
+import data.utils.DFAModelEditor;
 import net.automatalib.automata.concepts.InputAlphabetHolder;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.serialization.dot.GraphDOT;
-import net.automatalib.util.automata.random.RandomAutomata;
 import net.automatalib.words.*;
-import net.automatalib.words.impl.FastAlphabet;
 import net.automatalib.words.impl.Symbol;
 
 /**
  * An abstract class to initialize our benchmark
- * here we create the DFA of random SULs and new versions of them
+ * Here we create the DFA of random SULs and new versions of them
  **/
-public abstract class DFAGenerator {
+public abstract class SULGenerator {
     private final String[] ALL_NUM_STATES;
     private final int ALPHABET_RANGE;
     private final int NUM_DFA;
@@ -30,7 +28,7 @@ public abstract class DFAGenerator {
      * @param num_version    shows the number of versions for changing each SUL.
      * @param path           is the path of saving result
      **/
-    protected DFAGenerator(String[] all_num_states, int alphabet_range, int num_dfa, int num_version, String path) {
+    protected SULGenerator(String[] all_num_states, int alphabet_range, int num_dfa, int num_version, String path) {
         NUM_DFA = num_dfa;
         ALL_NUM_STATES = all_num_states;
         ALPHABET_RANGE = alphabet_range;
@@ -57,12 +55,8 @@ public abstract class DFAGenerator {
 
                 for (int i = 0; i < NUM_DFA; i++) {
 
-                    Alphabet<Symbol> alphabets = generateAlphabet(); //alphabet set
-
-                    Random rand = new Random(1234);
                     //generate a dfa (old version)
-                    CompactDFA<Symbol> modelDFA = RandomAutomata.randomICDFA(rand, numStates, alphabets, true);
-                    DFAModelEditor modelEditor = new DFAModelEditor(modelDFA);
+                    DFAModelEditor modelEditor = new DFAModelEditor(numStates, ALPHABET_RANGE);
 
                     //save generated dfa
                     File childDir = new File(folder, "p_" + String.format("%03d", i) + "/v_000");
@@ -98,16 +92,9 @@ public abstract class DFAGenerator {
      **/
     protected abstract DFAModelEditor updateModel(DFAModelEditor modelEditor) throws Exception;
 
-    private FastAlphabet<Symbol> generateAlphabet() {
-        List<Symbol> outCol = new ArrayList<>();
-        for (int i = 0; i < ALPHABET_RANGE; i++) {
-            outCol.add(new Symbol(i));
-        }
-        return new FastAlphabet<>(outCol);
-    }
 
     /**
-     * save sul with model of @param dfa in a dot file with path @param dir
+     * save SUL with model of @param dfa in a dot file with path @param dir
      **/
     private void saveDot(File dir, CompactDFA<Symbol> dfa) throws IOException {
         // save sul in a dot file
@@ -118,7 +105,7 @@ public abstract class DFAGenerator {
     }
 
     /**
-     * save the sul with model of @param dfa in a fsm file with path @param dir
+     * save the SUL with model of @param dfa in a fsm file with path @param dir
      **/
     private void saveDFA(File fsm, CompactDFA<Symbol> dfa) throws IOException {
         File sul_model = new File(fsm.getParentFile(), fsm.getName() + ".fsm");
@@ -174,9 +161,3 @@ public abstract class DFAGenerator {
     }
 
 }
-
-
-
-
-
-
