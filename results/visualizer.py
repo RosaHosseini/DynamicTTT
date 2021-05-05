@@ -38,12 +38,14 @@ methods = {
     "/DFA_add_state_learnLib"
 }
 
-for method in methods:
-    df = pd.read_csv(basePath + method + "/0005s_20a.csv")
-    visualize_model_learning_result(df, method + "/0005s_20a")
+eqMethod = "/wrnd"
 
-    df = pd.read_csv(basePath + method + "/0010s_20a.csv")
-    visualize_model_learning_result(df, method + "/0010s_20a")
+for method in methods:
+    df = pd.read_csv(basePath + eqMethod + method + "/0005s_20a.csv")
+    visualize_model_learning_result(df, eqMethod + method + "/0005s_20a")
+
+    df = pd.read_csv(basePath + eqMethod + method + "/0010s_20a.csv")
+    visualize_model_learning_result(df, eqMethod + method + "/0010s_20a")
 
     # df =  pd.read_csv(basePath + method + "/0050s_20a.csv")
     # visualize_model_learning_result(df, method + "/0050s_20a")

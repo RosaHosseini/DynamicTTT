@@ -3,14 +3,14 @@ import data.ResultWriter;
 import data.benchmarkReader.SULReader;
 import data.utils.DFAConstants;
 import dynamicTTT.DynamicTTT;
+import modelLearning.EQMethod;
 import modelLearning.ModelLearningInfo;
 import modelLearning.Teacher;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
-import net.automatalib.visualization.DefaultVisualizationHelper;
-import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -37,21 +37,20 @@ public class TTTExampleDFA {
                 "/DFA_remove_state_learnLib",
                 "/DFA_add_state_learnLib"
         };
-        String eqMethod = "w";
-
-        for (String method : methods) {
-
-            results = test2(method, 5, eqMethod);
-            writer.toCSV(results, basePath + "/wp" + method + "/0005s_20a.csv");
-
-            results = test2(method, 10, eqMethod);
-            writer.toCSV(results, basePath + "/wp" + method + "/0010s_20a.csv");
+        EQMethod eqMethod = EQMethod.WP_RAND;
+        System.out.println(eqMethod);
 //
-            results = test2(method, 50, eqMethod);
-            writer.toCSV(results, basePath + "/wp" + method + "/0050s_20a.csv");
-        }
-
-
+//        for (String method : methods) {
+//
+//            results = test2(method, 5, eqMethod);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_20a.csv");
+//
+//            results = test2(method, 10, eqMethod);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
+////
+//            results = test2(method, 50, eqMethod);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
+//        }
     }
 
 
@@ -95,7 +94,7 @@ public class TTTExampleDFA {
 
     public static void test() throws Exception {
         CompactDFA<String> dfa = generateOutdatedModel();
-        Teacher<String> teacher = new Teacher<>(dfa, "w");
+        Teacher<String> teacher = new Teacher<>(dfa, EQMethod.W);
         TTT<String> tttLearner = new TTT<>(teacher, dfa.getInputAlphabet());
         DFA<?, String> hypothesis = tttLearner.learn();
         if (hypothesis == null)
@@ -104,7 +103,7 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
 
         CompactDFA<String> dfa2 = generateUpdatedModel();
-        Teacher<String> teacher2 = new Teacher<>(dfa2, "w");
+        Teacher<String> teacher2 = new Teacher<>(dfa2, EQMethod.W);
         DynamicTTT<String> dynamicLearner = new DynamicTTT<>(teacher2, tttLearner.getSpanningTree(), tttLearner.getDiscriminationTree(), dfa2.getInputAlphabet());
         DFA<?, String> hypothesis2 = dynamicLearner.learn();
         if (hypothesis2 == null)
@@ -113,7 +112,7 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
 
 
-        Teacher<String> teacher3 = new Teacher<>(dfa2, "w");
+        Teacher<String> teacher3 = new Teacher<>(dfa2, EQMethod.W);
         TTT<String> ttt2 = new TTT<>(teacher3, dfa2.getInputAlphabet());
         DFA<?, String> hypothesis3 = ttt2.learn();
         if (hypothesis3 == null)
@@ -122,7 +121,7 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
     }
 
-    public static List<ModelLearningInfo> test2(String method, int stateNum, String eqOption) throws Exception {
+    public static List<ModelLearningInfo> test2(String method, int stateNum, EQMethod eqOption) {
         List<ModelLearningInfo> results = new ArrayList<>();
 
         int id = 0;

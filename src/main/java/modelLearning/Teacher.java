@@ -16,13 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+
 public class Teacher<I> implements MembershipCounter<I> {
     public final DFACounterOracle<I> mqCounter;
     public final EquivalenceOracle<DFA<?, I>, I, Boolean> eqCounter;
     private final Map<Word<I>, Boolean> history = new HashMap<>();
 
 
-    public Teacher(CompactDFA<I> model, String eqOption) {
+    public Teacher(CompactDFA<I> model, EQMethod eqOption) {
         // Counters for MQs and EQs
         SimulatorOracle.DFASimulatorOracle<I> sulSim = new SimulatorOracle.DFASimulatorOracle<>(model);
 //        StatisticSUL<I, Boolean>  mq_sym = new SymbolCounterSUL<I, Boolean>("MQ", sulSim);
@@ -51,16 +52,16 @@ public class Teacher<I> implements MembershipCounter<I> {
 
     private EquivalenceOracle<DFA<?, I>, I, Boolean> buildEqOracle(
             Random rnd_seed,
-            String option
+            EQMethod option
     ) {
         switch (option) {
-            case "rndWords":
+            case RAND_WORDS:
                 return new DFARandomWordsEQOracle<>(mqCounter, 0, 10, 40000);
-            case "wp":
+            case WP:
                 return new DFAWpMethodEQOracle<>(mqCounter, 2);
-            case "wrnd":
+            case W_RAND:
                 return new DFARandomWMethodEQOracle<>(mqCounter, 0, 4, 40000, rnd_seed, 1);
-            case "wprnd":
+            case WP_RAND:
                 return new DFARandomWpMethodEQOracle<>(mqCounter, 0, 4, 40000, rnd_seed, 1);
             default:
                 return new DFAWMethodEQOracle<>(mqCounter, 2);
