@@ -2,6 +2,7 @@ package TTT.discriminiationTree;
 
 import TTT.TTTNode;
 import modelLearning.MembershipCounter;
+import net.automatalib.commons.util.Pair;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -22,70 +23,46 @@ public class DiscriminationTree<I> {
 
 
     /**
+     * @param sequenceAccess a word that shows the sequence access of a state
+     *                       that we want to sift it in the discrimination Tree
+     *                       we find the position of sate in the Tree
+     * @return a leaf in the discrimination Tree which is the place of the given state.
+     **/
+    public DTLeaf<I> sift(Word<I> sequenceAccess) {
+        return root.sift(sequenceAccess, membershipCounter);
+    }
+
+    /**
      * @param state         a TTT node that we want to be place in the discrimination Tree
      * @param discriminator a string word shows the discriminator that we want state be a child of it
      *                      discriminate a state by a specific discriminator
      *                      (if the discriminator does not exist in this Discrimination Tree we add it)
      * @return false if we can't discriminate the state in the current discrimination Tree other wise true
      **/
-    public boolean discriminate(Word<I> discriminator, TTTNode<I> state) {
+    public boolean discriminate(Word<I> discriminator, TTTNode<I> state, TTTNode<I> from) {
         DTLeaf<I> DTLeaf = sift(state.sequenceAccess);
-        if (DTLeaf.parent.getDiscriminator().equals(discriminator))
+
+
+        if (DTLeaf.parent.getDiscriminator().equals(discriminator)) {
             return discriminate(state, DTLeaf);
-
+        }
         if (!(DTLeaf instanceof EmptyDTLeaf)) {
-            boolean oldDTLeafAccepting = membershipCounter.membershipQuery(DTLeaf.state.sequenceAccess.concat(discriminator));
-            boolean newDTLeafAccepting = membershipCounter.membershipQuery(state.sequenceAccess.concat(discriminator));
-            if (newDTLeafAccepting == oldDTLeafAccepting)
+            if (DTLeaf.state.sequenceAccess.equals(from.sequenceAccess)) {
+                return placeNewLeafInFilledLeaf(discriminator, DTLeaf, state);
+            }
+
+            DiscriminatorNode<I> LCA = (DiscriminatorNode<I>) findLCA(root, DTLeaf.state.sequenceAccess, from.sequenceAccess);
+            if (LCA == null)
                 return false;
+            DiscriminatorNode<I> newDiscriminatorNode = reDiscriminate(discriminator, LCA);
 
-            if (!discriminators.contains(discriminator))
-                discriminators.add(discriminator);
+            DTLeaf<I> newPose = sift(state.sequenceAccess);
+            boolean result = discriminate(state, newPose);
 
-            DiscriminatorNode<I> discriminatorNode = new DiscriminatorNode<>(DTLeaf.parent, discriminator);
-            DTLeaf<I> newDTLeaf = new DTLeaf<>(discriminatorNode, state);
-
-            if (newDTLeafAccepting) {
-                discriminatorNode.dashedChild = newDTLeaf;
-                discriminatorNode.solidChild = DTLeaf;
-            } else {
-                discriminatorNode.solidChild = newDTLeaf;
-                discriminatorNode.dashedChild = DTLeaf;
-            }
-
-            boolean accepting = false;
-            if (DTLeaf.parent.dashedChild == DTLeaf)
-                accepting = true;
-
-            if (accepting)
-                DTLeaf.parent.dashedChild = discriminatorNode;
-            else
-                DTLeaf.parent.solidChild = discriminatorNode;
-            DTLeaf.parent = discriminatorNode;
-
+            removeRedundantDiscriminators(newDiscriminatorNode);
+            return result;
         } else {
-            if (!discriminators.contains(discriminator))
-                discriminators.add(discriminator);
-
-            DiscriminatorNode<I> discriminatorNode = new DiscriminatorNode<>(DTLeaf.parent, discriminator);
-            boolean newAccepting = membershipCounter
-                    .membershipQuery(state.sequenceAccess.concat(discriminatorNode.getDiscriminator()));
-            DTLeaf<I> newDTLeaf = new DTLeaf<>(discriminatorNode, state);
-
-            if (newAccepting) {
-                discriminatorNode.dashedChild = newDTLeaf;
-            } else {
-                discriminatorNode.solidChild = newDTLeaf;
-            }
-
-            boolean accepting = false;
-            if (DTLeaf.parent.dashedChild == DTLeaf)
-                accepting = true;
-
-            if (accepting)
-                DTLeaf.parent.dashedChild = discriminatorNode;
-            else
-                DTLeaf.parent.solidChild = discriminatorNode;
+            placeNewLeafInEmptyLeaf(discriminator, (EmptyDTLeaf<I>) DTLeaf, state);
         }
         return true;
     }
@@ -100,9 +77,8 @@ public class DiscriminationTree<I> {
         return discriminate(state, DTLeaf);
     }
 
-
     /**
-     * @param state  a TTT node that we want to be place in the discrimination Tree
+     * @param state  a TTT node that we want to place it in the discrimination Tree
      * @param DTLeaf a Leaf in the current discrimination Tree that we want our state place there
      *               we place the new state in the given leaf of our discrimination Tree
      * @return false if we can't discriminate the state in the current discrimination Tree other wise true
@@ -118,17 +94,6 @@ public class DiscriminationTree<I> {
         } else
             return false;
     }
-
-    /**
-     * @param sequenceAccess a word that shows the sequence access of a state
-     *                       that we want to sift it in the discrimination Tree
-     *                       we find the position of sate in the Tree
-     * @return a leaf in the discrimination Tree which is the place of the given state.
-     **/
-    public DTLeaf<I> sift(Word<I> sequenceAccess) {
-        return root.sift(sequenceAccess, membershipCounter);
-    }
-
 
     /**
      * breadth first search on Discrimination Tree to find all temporary discriminators
@@ -164,12 +129,162 @@ public class DiscriminationTree<I> {
         throw new Exception("words are not available!");
     }
 
-    public DTLeaf<I> find(Word<I> word) throws Exception {
-        @Nullable DTLeaf<I> result  = root.find(word);
+    /**
+     * find a leaf node in DT
+     *
+     * @param word the sequence access of  state related to leaf
+     * @return the relted leaf
+     * @throws Exception if word is not available in any leaves of the discrimination Tree
+     */
+    public DTLeaf<I> findLeaf(Word<I> word) throws Exception {
+        @Nullable DTLeaf<I> result = root.find(word);
         if (result == null)
             throw new Exception("the given word is not valid in the discrimination Tree");
         return result;
     }
+
+    /**
+     * find a discriminator node in DT
+     *
+     * @param word the word of discriminator
+     * @return the discriminatorNode
+     * @throws Exception if word is not available in any discriminators of the discrimination Tree
+     */
+    public DiscriminatorNode<I> findDiscriminatorNode(Word<I> word) throws Exception {
+        Queue<DiscriminatorNode<I>> queue = new ArrayDeque<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            DiscriminatorNode<I> currentNode = queue.remove();
+            if (currentNode.discriminator.equals(word))
+                return currentNode;
+            if (currentNode.dashedChild instanceof DiscriminatorNode)
+                queue.add((DiscriminatorNode<I>) currentNode.dashedChild);
+            if (currentNode.solidChild instanceof DiscriminatorNode)
+                queue.add((DiscriminatorNode<I>) currentNode.solidChild);
+        }
+        throw new Exception("the given word is not valid in any discriminators of discrimination Tree");
+    }
+
+
+    private boolean placeNewLeafInFilledLeaf(Word<I> discriminator, DTLeaf<I> DTLeaf, TTTNode<I> state) {
+        boolean oldDTLeafAccepting = membershipCounter.membershipQuery(DTLeaf.state.sequenceAccess.concat(discriminator));
+        boolean newDTLeafAccepting = membershipCounter.membershipQuery(state.sequenceAccess.concat(discriminator));
+        if (newDTLeafAccepting == oldDTLeafAccepting)
+            return false;
+
+        if (!discriminators.contains(discriminator))
+            discriminators.add(discriminator);
+
+        DiscriminatorNode<I> discriminatorNode = new DiscriminatorNode<>(DTLeaf.parent, discriminator);
+        DTLeaf<I> newDTLeaf = new DTLeaf<>(discriminatorNode, state);
+
+        if (newDTLeafAccepting) {
+            discriminatorNode.dashedChild = newDTLeaf;
+            discriminatorNode.solidChild = DTLeaf;
+        } else {
+            discriminatorNode.solidChild = newDTLeaf;
+            discriminatorNode.dashedChild = DTLeaf;
+        }
+
+        boolean accepting = false;
+        if (DTLeaf.parent.dashedChild == DTLeaf)
+            accepting = true;
+
+        if (accepting)
+            DTLeaf.parent.dashedChild = discriminatorNode;
+        else
+            DTLeaf.parent.solidChild = discriminatorNode;
+        DTLeaf.parent = discriminatorNode;
+        return true;
+    }
+
+
+    private void placeNewLeafInEmptyLeaf(Word<I> discriminator, EmptyDTLeaf<I> DTLeaf, TTTNode<I> state) {
+        if (!discriminators.contains(discriminator))
+            discriminators.add(discriminator);
+
+        DiscriminatorNode<I> discriminatorNode = new DiscriminatorNode<>(DTLeaf.parent, discriminator);
+        boolean newAccepting = membershipCounter
+                .membershipQuery(state.sequenceAccess.concat(discriminatorNode.getDiscriminator()));
+        DTLeaf<I> newDTLeaf = new DTLeaf<>(discriminatorNode, state);
+
+        if (newAccepting) {
+            discriminatorNode.dashedChild = newDTLeaf;
+        } else {
+            discriminatorNode.solidChild = newDTLeaf;
+        }
+
+        boolean accepting = false;
+        if (DTLeaf.parent.dashedChild == DTLeaf)
+            accepting = true;
+
+        if (accepting)
+            DTLeaf.parent.dashedChild = discriminatorNode;
+        else
+            DTLeaf.parent.solidChild = discriminatorNode;
+    }
+
+    private DiscriminatorNode<I> reDiscriminate(Word<I> discriminator, DiscriminatorNode<I> root) {
+        DiscriminatorNode<I> newDiscriminatorNode = new DiscriminatorNode<>(root.parent, discriminator);
+        if (root.parent.isDashChild(root))
+            root.parent.dashedChild = newDiscriminatorNode;
+        else root.parent.solidChild = newDiscriminatorNode;
+
+        Pair<DiscriminationNode<I>, DiscriminationNode<I>> pair = split(discriminator, root);
+        newDiscriminatorNode.solidChild = pair.getFirst();
+        newDiscriminatorNode.dashedChild = pair.getSecond();
+        newDiscriminatorNode.solidChild.parent = newDiscriminatorNode;
+        newDiscriminatorNode.dashedChild.parent = newDiscriminatorNode;
+
+        return newDiscriminatorNode;
+    }
+
+    private Pair<DiscriminationNode<I>, DiscriminationNode<I>> split(Word<I> discriminator, DiscriminationNode<I> rootNode) {
+        if (rootNode instanceof DiscriminatorNode)
+            return split(discriminator, (DiscriminatorNode<I>) rootNode);
+        return split(discriminator, (DTLeaf<I>) rootNode);
+    }
+
+    private Pair<DiscriminationNode<I>, DiscriminationNode<I>> split(Word<I> discriminator, DiscriminatorNode<I> rootNode) {
+
+        Pair<DiscriminationNode<I>, DiscriminationNode<I>> solidPair =
+                split(discriminator, rootNode.solidChild);
+        Pair<DiscriminationNode<I>, DiscriminationNode<I>> dashedPair =
+                split(discriminator, rootNode.dashedChild);
+
+        DiscriminatorNode<I> solid = new DiscriminatorNode<>(
+                rootNode.parent,
+                rootNode.discriminator,
+                dashedPair.getFirst(),
+                solidPair.getFirst(),
+                rootNode.isFinal
+        );
+
+        DiscriminatorNode<I> dashed = new DiscriminatorNode<>(
+                rootNode.parent,
+                rootNode.discriminator,
+                dashedPair.getSecond(),
+                solidPair.getSecond(),
+                rootNode.isFinal
+        );
+        solid.dashedChild.parent = solid;
+        solid.solidChild.parent = solid;
+
+        dashed.dashedChild.parent = dashed;
+        dashed.solidChild.parent = dashed;
+
+        return Pair.of(solid, dashed);
+    }
+
+    private Pair<DiscriminationNode<I>, DiscriminationNode<I>> split(Word<I> discriminator, DTLeaf<I> rootNode) {
+        if (rootNode instanceof EmptyDTLeaf)
+            return Pair.of(rootNode, rootNode);
+        boolean accepting = membershipCounter.membershipQuery(rootNode.state.sequenceAccess.concat(discriminator));
+        if (accepting)
+            return Pair.of(new EmptyDTLeaf<>(root.parent), rootNode);
+        return Pair.of(rootNode, new EmptyDTLeaf<>(rootNode.parent));
+    }
+
 
     /**
      * find lowest common ancestor of two inputs in the sub-Tree of @param node
@@ -197,5 +312,26 @@ public class DiscriminationTree<I> {
         return (leftLCA != null) ? leftLCA : rightLCA;
     }
 
+    /***
+     * Remove any discriminator in sub-tree of @param DTNode which does not discriminate any state!
+     */
+    protected void removeRedundantDiscriminators(DiscriminatorNode<I> DTNode) {
+        if (DTNode.solidChild instanceof DiscriminatorNode)
+            removeRedundantDiscriminators((DiscriminatorNode<I>) DTNode.solidChild);
+        if (DTNode.dashedChild instanceof DiscriminatorNode)
+            removeRedundantDiscriminators((DiscriminatorNode<I>) DTNode.dashedChild);
 
+        DiscriminatorNode<I> parent = DTNode.parent;
+        if (DTNode.dashedChild instanceof EmptyDTLeaf) {
+            DTNode.solidChild.parent = parent;
+            if (parent.isDashChild(DTNode))
+                parent.dashedChild = DTNode.solidChild;
+            else parent.solidChild = DTNode.solidChild;
+        } else if (DTNode.solidChild instanceof EmptyDTLeaf) {
+            DTNode.dashedChild.parent = parent;
+            if (parent.isDashChild(DTNode))
+                parent.dashedChild = DTNode.dashedChild;
+            else parent.solidChild = DTNode.dashedChild;
+        }
+    }
 }

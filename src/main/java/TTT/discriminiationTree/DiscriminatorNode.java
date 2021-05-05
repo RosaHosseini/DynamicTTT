@@ -27,6 +27,15 @@ public class DiscriminatorNode<I> extends DiscriminationNode<I> {
         this.solidChild = solidChild;
     }
 
+    public DiscriminatorNode(DiscriminatorNode<I> parent,
+                             Word<I> discriminator,
+                             DiscriminationNode<I> dashedChild,
+                             DiscriminationNode<I> solidChild,
+                             boolean isFinal) {
+        this(parent, discriminator, dashedChild, solidChild);
+        this.isFinal = isFinal;
+    }
+
     public DiscriminatorNode(DiscriminatorNode<I> parent, Word<I> discriminator) {
         super(parent);
         this.discriminator = discriminator;
@@ -35,10 +44,7 @@ public class DiscriminatorNode<I> extends DiscriminationNode<I> {
     }
 
     public DiscriminatorNode(DiscriminatorNode<I> parent, Word<I> discriminator, Boolean isFinal) {
-        super(parent);
-        this.discriminator = discriminator;
-        this.dashedChild = new EmptyDTLeaf<>(this);
-        this.solidChild = new EmptyDTLeaf<>(this);
+        this(parent, discriminator);
         this.isFinal = isFinal;
     }
 
@@ -79,6 +85,13 @@ public class DiscriminatorNode<I> extends DiscriminationNode<I> {
         if (solidChildAssertion && dashedChildAssertion) {
             this.isFinal = true;
             this.discriminator = finalDiscriminator;
+            return true;
+        } else if ((!solidChildAssertion) && (!dashedChildAssertion)) {
+            this.isFinal = true;
+            this.discriminator = finalDiscriminator;
+            DiscriminationNode<I> tempSolidChild = solidChild;
+            this.solidChild = dashedChild;
+            this.dashedChild = tempSolidChild;
             return true;
         }
         return false;

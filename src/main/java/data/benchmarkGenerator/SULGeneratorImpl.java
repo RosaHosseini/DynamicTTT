@@ -8,7 +8,7 @@ import java.util.Random;
 
 /**
  * Implementation of SUL Generator
-**/
+ **/
 
 class SULGeneratorAddState extends SULGenerator {
 
@@ -109,15 +109,15 @@ class SULGeneratorChangeTail extends SULGenerator {
 }
 
 
-class SULGeneratorRandom extends SULGenerator {
+class TestGenerator extends SULGenerator {
     private final static Random rand = new Random(System.currentTimeMillis());
 
-    SULGeneratorRandom() {
-        super(DFAConstants.STATES_NUMS,
-                DFAConstants.ALPHABET_SIZE,
-                DFAConstants.NUM_DFA,
-                DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_random_learnLib"
+    TestGenerator() {
+        super(DFAConstants.STATES_NUMS2,
+                DFAConstants.ALPHABET_SIZE2,
+                DFAConstants.NUM_DFA2,
+                DFAConstants.NUM_VERSION2,
+                DFAConstants.BASE_BENCHMARK_PATH2 + "/test"
         );
     }
 
@@ -157,6 +157,53 @@ class SULGeneratorRandom extends SULGenerator {
 
 }
 
+class SULGeneratorRandom extends SULGenerator {
+    private final static Random rand = new Random(System.currentTimeMillis());
+
+    SULGeneratorRandom() {
+        super(DFAConstants.STATES_NUMS,
+                DFAConstants.ALPHABET_SIZE,
+                DFAConstants.NUM_DFA,
+                DFAConstants.NUM_VERSION,
+                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_random_learnLib"
+        );
+    }
+
+    @Override
+    protected DFAModelEditor updateModel(DFAModelEditor modelEditor) {
+
+        //generate a new random dfa
+        int opt = rand.nextInt(3);
+        switch (opt) {
+            case 0: // add new state
+                modelEditor.addState();
+                break;
+            case 3: // remove existing state
+                if (modelEditor.getModel().getStates().size() < 2) {
+                    return updateModel(modelEditor);
+                } else {
+                    modelEditor.removeState();
+                }
+                break;
+            case 2: // add input symbol
+                modelEditor.addAlphabet();
+                break;
+            case 4: // remove alphabet
+                if (modelEditor.getModel().getInputAlphabet().size() < 2) {
+                    return updateModel(modelEditor);
+                } else {
+                    modelEditor.removeAlphabet();
+                }
+                break;
+            case 1: // change tail state
+                modelEditor.changeTail();
+                break;
+        }
+        return modelEditor;
+    }
+
+}
+
 
 class Main {
     public static void main(String[] args) {
@@ -165,6 +212,7 @@ class Main {
         new SULGeneratorAddAlphabet().generate();
         new SULGeneratorChangeTail().generate();
         new SULGeneratorRemoveAlphabet().generate();
-//        new DFAGeneratorRemoveState().generate();
+        new SULGeneratorRemoveState().generate();
+//        new TestGenerator().generate();
     }
 }

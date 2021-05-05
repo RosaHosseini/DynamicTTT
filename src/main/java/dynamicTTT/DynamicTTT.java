@@ -1,8 +1,12 @@
 package dynamicTTT;
 
 import TTT.TTT;
+import TTT.TTTNode;
 import TTT.discriminatorTrie.DiscriminatorTrie;
-import TTT.discriminiationTree.*;
+import TTT.discriminiationTree.DTLeaf;
+import TTT.discriminiationTree.DiscriminationTree;
+import TTT.discriminiationTree.EmptyDTLeaf;
+import TTT.spanningTree.SpanningTree;
 import de.learnlib.api.query.DefaultQuery;
 import dynamicTTT.discriminationTree.DynamicDiscriminationTree;
 import dynamicTTT.spanningTree.OutdatedSpanningTreeContainer;
@@ -11,27 +15,27 @@ import modelLearning.ModelLearner;
 import modelLearning.Teacher;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
-import net.automatalib.serialization.dot.DefaultDOTVisualizationHelper;
+import net.automatalib.commons.util.Pair;
+import net.automatalib.visualization.DefaultVisualizationHelper;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
-import TTT.spanningTree.SpanningTree;
-import TTT.TTTNode;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 
-public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter<I> {
+public class DynamicTTT<I> extends ModelLearner<I> implements MembershipCounter<I> {
 
     private final DiscriminationTree<I> outdatedDiscriminationTree;
     private final List<TTTNode<I>> tempSpanningTree = new ArrayList<>();
-    private final HashMap<Word<I>, TTTNode<I>> equivalenceStateMap = new HashMap<Word<I>, TTTNode<I>>();
+    private final HashMap<Word<I>, TTTNode<I>> equivalenceStateMap = new HashMap<>();
     private final Alphabet<I> alphabet;
     private final CompactDFA<I> hypothesis;
     private final DynamicDiscriminationTree<I> discriminationTree;
     private SpanningTree<I> spanningTree;
     private final OutdatedSpanningTreeContainer<I> outdatedPrefixesContainer;
+    private long eqCounter = 0L;
 
 
     public DynamicTTT(Teacher<I> teacher,
@@ -42,7 +46,7 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
         this.alphabet = updatedAlphabet;
         this.hypothesis = new CompactDFA<>(this.alphabet);
         this.outdatedDiscriminationTree = outdatedDiscriminationTree;
-        this.discriminationTree = new DynamicDiscriminationTree<>(this.teacher);
+        this.discriminationTree = new DynamicDiscriminationTree<>(this.teacher, this.alphabet);
         this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
     }
 
@@ -50,10 +54,9 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
     public DFA<?, I> learn() {
         try {
             reconstructHypothesis();
-            Visualization.visualize(hypothesis, alphabet, new DefaultDOTVisualizationHelper<>());
             completeHypothesis();
             cleanDiscriminationTree();
-
+//            Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
 
             TTT<I> tttLearner = new TTT<>(
                     teacher,
@@ -65,12 +68,19 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
             );
             tttLearner.finalizeHypothesis();
             while (true) {
-                @Nullable DefaultQuery<I, Boolean> eq = teacher.equivalenceQuery(hypothesis, alphabet);
-                if (eq == null)
+                @Nullable DefaultQuery<I, Boolean> eq = teacher.equivalenceQuery(tttLearner.getHypothesis(), alphabet);
+                eqCounter++;
+
+                if (eq == null) {
+                    tttLearner.finalizeHypothesis();
                     return tttLearner.getHypothesis();
+                }
                 tttLearner.refineHypothesis(eq);
+//                Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
+
                 tttLearner.stabilizeHypothesis();
-                tttLearner.finalizeHypothesis();
+//                Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,27 +120,27 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
         tempSpanningTree.sort(Comparator.comparingInt(o -> o.sequenceAccess.size()));
 
         for (TTTNode<I> node : tempSpanningTree) {
-            Deque<TTTNode<I>> queue = new ArrayDeque<>();
-
-            TTTNode<I> currNode = node;
-
+            Deque<Pair<TTTNode<I>, TTTNode<I>>> queue = new ArrayDeque<>();
             if (node.sequenceAccess.size() == 0) { //initial node
                 spanningTree = new SpanningTree<>(node);
                 continue;
             }
-
+            Pair<TTTNode<I>, TTTNode<I>> pair = Pair.of(node, null);
             while (true) {
-                queue.addFirst(currNode);
+                queue.addFirst(pair);
+                TTTNode<I> currNode = pair.getFirst();
                 Word<I> sequence = currNode.sequenceAccess;
                 Word<I> prefix = currNode.sequenceAccess.prefix(sequence.size() - 1);
                 if (tempSpanningTreeContain(prefix))
                     break;
-                currNode = discriminateLongestPrefix(currNode);
+                pair = discriminateLongestPrefix(currNode);
             }
 
-            for (TTTNode<I> tttNode : queue) {
-                boolean result = spanningTree.addState(tttNode);
-                expandStateTransitions(tttNode);
+            for (Pair<TTTNode<I> , TTTNode<I>> p: queue) {
+                boolean result = spanningTree.addState(p.getFirst());
+                expandStateTransitions(p.getFirst());
+                if (p.getSecond()!=null)
+                    updateAllTransitionsEndTo(p.getSecond().id);
                 assert result;
             }
         }
@@ -148,15 +158,18 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
      * @param uaNode is a tttNode which we want to discriminate it form its longest prefix
      * @return the tttNode belong to the longest prefix of ua
      */
-    private TTTNode<I> discriminateLongestPrefix(TTTNode<I> uaNode) throws Exception {
+    private Pair<TTTNode<I>, TTTNode<I>> discriminateLongestPrefix(TTTNode<I> uaNode) throws Exception {
         Word<I> ua = uaNode.sequenceAccess;
         Word<I> u = ua.prefix(ua.size() - 1);
         I a = ua.lastSymbol();
         TTTNode<I> vNode = equivalenceStateMap.get(u);
         Word<I> v = vNode.sequenceAccess;
 
+        TTTNode<I> vaNode = equivalenceStateMap.get(v.append(a));
+        Word<I> va = vaNode.sequenceAccess;
+
         // find discriminator between u and v
-        Word<I> discriminator = discriminationTree.findDiscriminator(v, ua);
+        Word<I> discriminator = discriminationTree.findDiscriminator(va, ua);
         Word<I> newDiscriminator = new WordBuilder<I>().append(a).append(discriminator).toWord();
 
         // add new node to hypothesis
@@ -165,9 +178,11 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
         hypothesis.addTransition(uNode.id, a, uaNode.id);
 
         // new node to discrimination tree
-        discriminationTree.discriminate(newDiscriminator, uNode);
-
-        return uNode;
+        boolean result = discriminationTree.discriminate(newDiscriminator, uNode, vNode);
+        if (!result)
+            throw new Exception("could not discriminate longest prefix for u = " + uNode.sequenceAccess +
+                    "v =" + vNode.sequenceAccess + "ua= " + uaNode.sequenceAccess);
+        return Pair.of(uNode, vNode);
     }
 
     /***
@@ -192,7 +207,7 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
         int state_id;
         if (sequenceAccess.size() > 0) { //if not initial state (check transition of prefix)
             state_id = hypothesis.addState(accepting);
-            int origin_id = hypothesis.getState(sequenceAccess.prefix(sequenceAccess.size() - 1));
+            Integer origin_id = hypothesis.getState(sequenceAccess.prefix(sequenceAccess.size() - 1));
             I transition = sequenceAccess.lastSymbol();
             if (isTemp) {
                 if (hasTransition(hypothesis, origin_id, transition))
@@ -230,6 +245,52 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
         }
     }
 
+    /**
+     * Update all transitions in hypothesis which end to a specific state
+     *
+     * @param destId the state id of destination of transitions
+     * @throws Exception if the transition ends to a state which is not available in hypothesis
+     */
+    private void updateAllTransitionsEndTo(int destId) throws Exception {
+        Collection<Word<I>> sequences = getAllSequenceAccesses(destId);
+
+        for (Word<I> sequence : sequences) {
+            DTLeaf<I> leaf = discriminationTree.sift(sequence);
+            if (leaf instanceof EmptyDTLeaf) {
+                throw new Exception("sequence" + sequence + "is not valid in discrimination Tree!");
+            } else {
+                if (leaf.state.id == destId) {
+                    continue;
+                }
+                Word<I> prefix = sequence.prefix(sequence.size() - 1);
+                I transition = sequence.lastSymbol();
+                Integer originState = hypothesis.getState(prefix);
+                hypothesis.removeAllTransitions(originState, transition);
+                hypothesis.addTransition(originState, transition, leaf.state.id);
+            }
+        }
+    }
+
+
+    /***
+     * @param stateId the id of a state
+     * @return all sequence accesses in hypothesis that end to state with id of 'stateId'
+     */
+    private Collection<Word<I>> getAllSequenceAccesses(int stateId) {
+        Set<Word<I>> sequences = new HashSet<>();
+        Collection<Integer> states = hypothesis.getStates();
+        for (int state : states) {
+            for (I symbol : alphabet) {
+                if (hypothesis.getSuccessor(state, symbol) == stateId) {
+                    TTTNode<I> spanningNode = spanningTree.getState(state);
+                    if (spanningNode  != null)
+                        sequences.add(spanningNode.sequenceAccess.append(symbol));
+                }
+            }
+        }
+        return sequences;
+    }
+
 
     private void addToEquivalenceStateMap(Word<I> sequence, TTTNode<I> node) {
         equivalenceStateMap.put(sequence, node);
@@ -250,4 +311,7 @@ public class DynamicTTT<I> extends ModelLearner<I> implements  MembershipCounter
     }
 
 
+    public long getEQCounter() {
+        return eqCounter;
+    }
 }

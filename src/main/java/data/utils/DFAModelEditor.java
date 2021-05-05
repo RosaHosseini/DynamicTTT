@@ -25,7 +25,7 @@ public class DFAModelEditor {
     private CompactDFA<Symbol> model;
     private String lastOperation = "initial-model";
 
-    private final Random rand = new Random(5678);
+    private final Random rand = new Random(System.currentTimeMillis());
 
     public DFAModelEditor(CompactDFA<Symbol> dfa) {
         this.model = dfa;
@@ -76,7 +76,7 @@ public class DFAModelEditor {
             temp_model.addTransition(newState, symbol, new_tr);
         }
 
-        model = HopcroftMinimization.minimizeDFA(temp_model, alphabets, HopcroftMinimization.PruningMode.PRUNE_AFTER);
+        model = HopcroftMinimization.minimizeDFA(temp_model, temp_model.getInputAlphabet(), HopcroftMinimization.PruningMode.PRUNE_AFTER);
         lastOperation = "op_addState";
 
     }
@@ -137,7 +137,7 @@ public class DFAModelEditor {
             }
         }
         //reset the model with temp_dfa
-        model = HopcroftMinimization.minimizeDFA(temp_dfa, alphabets, HopcroftMinimization.PruningMode.PRUNE_AFTER);
+        model = HopcroftMinimization.minimizeDFA(temp_dfa, temp_dfa.getInputAlphabet(), HopcroftMinimization.PruningMode.PRUNE_AFTER);
         lastOperation = "op_removeState";
     }
 
@@ -166,9 +166,9 @@ public class DFAModelEditor {
             FastDFAState sj = qSet.get(rand.nextInt(qSet.size()));
             temp_model.addTransition(si, newSymbol, sj);
         }
-        model = HopcroftMinimization.minimizeDFA(temp_model, alphabets, HopcroftMinimization.PruningMode.PRUNE_AFTER);
-        lastOperation = "op_addAlphabet";
 
+        model = HopcroftMinimization.minimizeDFA(temp_model, temp_model.getInputAlphabet(), HopcroftMinimization.PruningMode.PRUNE_AFTER);
+        lastOperation = "op_addAlphabet";
     }
 
     public void removeAlphabet() {
@@ -208,7 +208,7 @@ public class DFAModelEditor {
         FastDFAState qj = qSet.get(rand.nextInt(qSet.size()));
         temp_model.addTransition(qi, in, qj);
 
-        model = HopcroftMinimization.minimizeDFA(temp_model, alphabets, HopcroftMinimization.PruningMode.PRUNE_AFTER);
+        model = HopcroftMinimization.minimizeDFA(temp_model, temp_model.getInputAlphabet(), HopcroftMinimization.PruningMode.PRUNE_AFTER);
         lastOperation = "op_changeTail";
 
     }

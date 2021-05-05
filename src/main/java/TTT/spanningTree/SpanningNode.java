@@ -23,15 +23,19 @@ class SpanningNode<I> {
     boolean addState(TTTNode<I> node) {
         if (node.sequenceAccess == this.state.sequenceAccess)
             return false;
-        Word<I> prefix = node.sequenceAccess.prefix(this.state.sequenceAccess.size() + 1);
-        I transitionSymbol = prefix.lastSymbol();
-        if (!children.containsKey(transitionSymbol)) {
-            if (prefix.size() != node.sequenceAccess.size())
-                return false;
-            children.put(transitionSymbol, new SpanningNode<>(node));
-            return true;
-        } else
-            return children.get(transitionSymbol).addState(node);
+        try {
+            Word<I> prefix = node.sequenceAccess.prefix(this.state.sequenceAccess.size() + 1);
+            I transitionSymbol = prefix.lastSymbol();
+            if (!children.containsKey(transitionSymbol)) {
+                if (prefix.size() != node.sequenceAccess.size())
+                    return false;
+                children.put(transitionSymbol, new SpanningNode<>(node));
+                return true;
+            } else
+                return children.get(transitionSymbol).addState(node);
+        }catch (IndexOutOfBoundsException e){
+            return false;
+        }
     }
 
     @Nullable TTTNode<I> findState(int stateId) {
