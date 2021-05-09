@@ -32,20 +32,20 @@ basePath = "data"
 
 methods = {
     "/DFA_random_learnLib",
-    # "/DFA_change_tail_learnLib",
-    # "/DFA_remove_alphabet_learnLib",
-    # "/DFA_add_alphabet_learnLib",
-    # "/DFA_add_state_learnLib"
+    "/DFA_change_tail_learnLib",
+    "/DFA_remove_alphabet_learnLib",
+    "/DFA_add_alphabet_learnLib",
+    "/DFA_add_state_learnLib"
 }
 
 eqMethod = "/WP"
 
 for method in methods:
-    df = pd.read_csv(basePath + eqMethod + method + "/0005s_20a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0005s_20a")
+    df = pd.read_csv(basePath + eqMethod + method + "/0005s_5a.csv")
+    visualize_model_learning_result(df, eqMethod + method + "/0005s_5a")
 
     df = pd.read_csv(basePath + eqMethod + method + "/0010s_20a.csv")
     visualize_model_learning_result(df, eqMethod + method + "/0010s_20a")
 
-    # df =  pd.read_csv(basePath + method + "/0050s_20a.csv")
-    # visualize_model_learning_result(df, method + "/0050s_20a")
+    df = pd.read_csv(basePath + eqMethod + method + "/0050s_20a.csv")
+    visualize_model_learning_result(df, eqMethod + method + "/0050s_20a")

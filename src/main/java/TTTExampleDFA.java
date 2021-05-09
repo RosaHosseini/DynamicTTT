@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TransferQueue;
 
 import static data.utils.DFAConstants.BASE_BENCHMARK_PATH;
 
