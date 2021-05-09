@@ -32,13 +32,13 @@ basePath = "data"
 
 methods = {
     "/DFA_random_learnLib",
-    "/DFA_change_tail_learnLib",
-    "/DFA_remove_alphabet_learnLib",
-    "/DFA_add_alphabet_learnLib",
-    "/DFA_add_state_learnLib"
+    # "/DFA_change_tail_learnLib",
+    # "/DFA_remove_alphabet_learnLib",
+    # "/DFA_add_alphabet_learnLib",
+    # "/DFA_add_state_learnLib"
 }
 
-eqMethod = "/wrnd"
+eqMethod = "/WP"
 
 for method in methods:
     df = pd.read_csv(basePath + eqMethod + method + "/0005s_20a.csv")

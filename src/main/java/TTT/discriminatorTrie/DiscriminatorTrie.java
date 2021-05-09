@@ -5,6 +5,7 @@ import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class DiscriminatorTrie<I> {
@@ -28,19 +29,21 @@ public class DiscriminatorTrie<I> {
 
 
     public List<Word<I>> findAllCandidateDiscriminators() {
-        return findAllCandidateDiscriminators(root);
+        List<Word<I>> discriminators = findAllCandidateDiscriminators(root);
+        discriminators.sort(Comparator.comparingInt(Word::length));
+        return discriminators;
     }
 
     private List<Word<I>> findAllCandidateDiscriminators(DiscriminatorTrieNode<I> node) {
         List<Word<I>> result = new ArrayList<>();
         if (node.children.size() < alphabet.size())
-            for (I symbol : alphabet)
+            for (I symbol : alphabet) {
                 if (node.children.containsKey(symbol)) {
                     DiscriminatorTrieNode<I> child = node.children.get(symbol);
                     result.addAll(findAllCandidateDiscriminators(child));
-                } else
-                    result.add(new WordBuilder<I>().append(symbol).append(node.content).toWord());
-
+                }
+                result.add(new WordBuilder<I>().append(symbol).append(node.content).toWord());
+            }
         return result;
     }
 

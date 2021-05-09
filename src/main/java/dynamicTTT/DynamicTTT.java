@@ -36,18 +36,21 @@ public class DynamicTTT<I> extends ModelLearner<I> implements MembershipCounter<
     private SpanningTree<I> spanningTree;
     private final OutdatedSpanningTreeContainer<I> outdatedPrefixesContainer;
     private long eqCounter = 0L;
+    private boolean visualize = false;
 
 
     public DynamicTTT(Teacher<I> teacher,
                       SpanningTree<I> outdatedSpanningTree,
                       DiscriminationTree<I> outdatedDiscriminationTree,
-                      Alphabet<I> updatedAlphabet) {
+                      Alphabet<I> updatedAlphabet,
+                      boolean visulaize) {
         super(teacher);
         this.alphabet = updatedAlphabet;
         this.hypothesis = new CompactDFA<>(this.alphabet);
         this.outdatedDiscriminationTree = outdatedDiscriminationTree;
         this.discriminationTree = new DynamicDiscriminationTree<>(this.teacher, this.alphabet);
         this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
+        this.visualize = visulaize;
     }
 
     @Override
@@ -56,7 +59,8 @@ public class DynamicTTT<I> extends ModelLearner<I> implements MembershipCounter<
             reconstructHypothesis();
             completeHypothesis();
             cleanDiscriminationTree();
-//            Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
+            if (visualize)
+                Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
 
             TTT<I> tttLearner = new TTT<>(
                     teacher,
@@ -75,17 +79,21 @@ public class DynamicTTT<I> extends ModelLearner<I> implements MembershipCounter<
                     tttLearner.finalizeHypothesis();
                     return tttLearner.getHypothesis();
                 }
+                if (visualize)
+                    System.out.println(eq.toString());
                 tttLearner.refineHypothesis(eq);
-//                Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
 
                 tttLearner.stabilizeHypothesis();
-//                Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
+                if (visualize)
+                    Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
 
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             return null;
         }
+
     }
 
     public void reconstructHypothesis() throws Exception {
@@ -136,10 +144,10 @@ public class DynamicTTT<I> extends ModelLearner<I> implements MembershipCounter<
                 pair = discriminateLongestPrefix(currNode);
             }
 
-            for (Pair<TTTNode<I> , TTTNode<I>> p: queue) {
+            for (Pair<TTTNode<I>, TTTNode<I>> p : queue) {
                 boolean result = spanningTree.addState(p.getFirst());
                 expandStateTransitions(p.getFirst());
-                if (p.getSecond()!=null)
+                if (p.getSecond() != null)
                     updateAllTransitionsEndTo(p.getSecond().id);
                 assert result;
             }
@@ -283,7 +291,7 @@ public class DynamicTTT<I> extends ModelLearner<I> implements MembershipCounter<
             for (I symbol : alphabet) {
                 if (hypothesis.getSuccessor(state, symbol) == stateId) {
                     TTTNode<I> spanningNode = spanningTree.getState(state);
-                    if (spanningNode  != null)
+                    if (spanningNode != null)
                         sequences.add(spanningNode.sequenceAccess.append(symbol));
                 }
             }

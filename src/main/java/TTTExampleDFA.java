@@ -8,6 +8,8 @@ import modelLearning.ModelLearningInfo;
 import modelLearning.Teacher;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import net.automatalib.visualization.DefaultVisualizationHelper;
+import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
 
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TransferQueue;
 
 import static data.utils.DFAConstants.BASE_BENCHMARK_PATH;
 
@@ -35,22 +38,21 @@ public class TTTExampleDFA {
                 "/DFA_remove_alphabet_learnLib",
                 "/DFA_add_alphabet_learnLib",
                 "/DFA_remove_state_learnLib",
-                "/DFA_add_state_learnLib"
+                "/DFA_add_state_learnLib",
+//                "/test"
         };
-        EQMethod eqMethod = EQMethod.WP_RAND;
-        System.out.println(eqMethod);
+        EQMethod eqMethod = EQMethod.WP;
+        for (String method : methods) {
+
+            results = test2(method, 5, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_5a.csv");
+
+            results = test2(method, 10, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
 //
-//        for (String method : methods) {
-//
-//            results = test2(method, 5, eqMethod);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_20a.csv");
-//
-//            results = test2(method, 10, eqMethod);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
-////
-//            results = test2(method, 50, eqMethod);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
-//        }
+            results = test2(method, 50, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
+        }
     }
 
 
@@ -104,7 +106,7 @@ public class TTTExampleDFA {
 
         CompactDFA<String> dfa2 = generateUpdatedModel();
         Teacher<String> teacher2 = new Teacher<>(dfa2, EQMethod.W);
-        DynamicTTT<String> dynamicLearner = new DynamicTTT<>(teacher2, tttLearner.getSpanningTree(), tttLearner.getDiscriminationTree(), dfa2.getInputAlphabet());
+        DynamicTTT<String> dynamicLearner = new DynamicTTT<>(teacher2, tttLearner.getSpanningTree(), tttLearner.getDiscriminationTree(), dfa2.getInputAlphabet(), false);
         DFA<?, String> hypothesis2 = dynamicLearner.learn();
         if (hypothesis2 == null)
             throw new Exception("error in dynamic TTT");
@@ -121,14 +123,14 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
     }
 
-    public static List<ModelLearningInfo> test2(String method, int stateNum, EQMethod eqOption) {
+    public static List<ModelLearningInfo> test2(String method, int stateNum, EQMethod eqOption, Boolean visualize) {
         List<ModelLearningInfo> results = new ArrayList<>();
 
         int id = 0;
 
         out:
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
+        for (int i = 0; i < 20; i++) {
+            for (int j = 1; j < 10; j++) {
                 try {
                     id++;
                     String state = "/s_" + String.format("%04d", stateNum);
@@ -143,7 +145,8 @@ public class TTTExampleDFA {
                     DFA<?, String> hypothesis = tttLearner.learn();
                     if (hypothesis == null)
                         throw new Exception("what");
-//                    Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
+                    if (visualize)
+                        Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
 
 
                     //Dynamic TTT
@@ -153,12 +156,14 @@ public class TTTExampleDFA {
                     dfa = new SULReader().parseDFAFromDot(f);
                     Teacher<String> teacher = new Teacher<>(dfa, eqOption);
                     teacher.mqCounter.getCount();
-//                    Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
-//
+                    if (visualize)
+                        Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
                     DynamicTTT<String> dynamicTTTLearner = new DynamicTTT<>(teacher,
                             tttLearner.getSpanningTree(),
                             tttLearner.getDiscriminationTree(),
-                            dfa.getInputAlphabet());
+                            dfa.getInputAlphabet(),
+                            visualize
+                    );
                     DFA<?, String> updatedHypothesis = dynamicTTTLearner.learn();
                     if (updatedHypothesis == null)
                         throw new Exception("what");
@@ -202,7 +207,7 @@ public class TTTExampleDFA {
                     continue out;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println(BASE_BENCHMARK_PATH + method + "/s" + stateNum + "/p" + j + "/v_" + String.format("%03d", j) + ".dot");
+                    System.out.println(BASE_BENCHMARK_PATH + method + "/s" + stateNum + "/p" + i + "/v_" + String.format("%03d", j) + ".dot");
                     continue out;
                 }
             }

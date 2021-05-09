@@ -60,7 +60,7 @@ public class TTT<I> extends ModelLearner<I> implements MembershipCounter<I> {
 //                    finalizeHypothesis();
                     return this.hypothesis;
                 }
-//                System.out.println("counter example " + eq.getInput());
+                System.out.println("counter example " + eq.getInput());
                 refineHypothesis(eq);
                 stabilizeHypothesis();
 //                finalizeHypothesis();
@@ -196,6 +196,16 @@ public class TTT<I> extends ModelLearner<I> implements MembershipCounter<I> {
             if (tempDiscriminationNodes.size() == 0) // all discriminators are final
                 return;
             List<Word<I>> reservedSuffixes = discriminatorTrie.findAllCandidateDiscriminators();
+
+            for (DiscriminatorNode<I> tempDiscriminator: tempDiscriminationNodes) {
+                Word<I> suffix = tempDiscriminator.getDiscriminator();
+                if (reservedSuffixes.contains(suffix)) {
+                    tempDiscriminator.makeFinal(suffix);
+                    discriminatorTrie.insert(suffix);
+                    tempDiscriminationNodes.remove(tempDiscriminator);
+                    continue outer;
+                }
+            }
 
             for (Word<I> suffix : reservedSuffixes) {
                 for (DiscriminatorNode<I> tempDiscriminator : tempDiscriminationNodes) {

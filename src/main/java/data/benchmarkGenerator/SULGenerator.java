@@ -56,7 +56,7 @@ public abstract class SULGenerator {
                 for (int i = 0; i < NUM_DFA; i++) {
 
                     //generate a dfa (old version)
-                    DFAModelEditor modelEditor = new DFAModelEditor(numStates, ALPHABET_RANGE);
+                    DFAModelEditor modelEditor = new DFAModelEditor( numStates, ALPHABET_RANGE);
 
                     //save generated dfa
                     File childDir = new File(folder, "p_" + String.format("%03d", i) + "/v_000");

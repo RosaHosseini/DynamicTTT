@@ -3,6 +3,7 @@ package modelLearning;
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.filter.cache.dfa.DFACacheOracle;
+import de.learnlib.filter.statistic.Counter;
 import de.learnlib.filter.statistic.oracle.DFACounterOracle;
 import de.learnlib.oracle.equivalence.*;
 import de.learnlib.oracle.membership.SimulatorOracle;
@@ -26,8 +27,8 @@ public class Teacher<I> implements MembershipCounter<I> {
     public Teacher(CompactDFA<I> model, EQMethod eqOption) {
         // Counters for MQs and EQs
         SimulatorOracle.DFASimulatorOracle<I> sulSim = new SimulatorOracle.DFASimulatorOracle<>(model);
-//        StatisticSUL<I, Boolean>  mq_sym = new SymbolCounterSUL<I, Boolean>("MQ", sulSim);
-//        StatisticSUL<I, Boolean>  mq_rst = new ResetCounterSUL <I, Boolean>("MQ", sulSim);
+//        StatisticSUL<I, Boolean> mq_sym = new SymbolCounterSUL<I, Boolean>("MQ", sulSim);
+//        StatisticSUL<I, Boolean> mq_rst = new ResetCounterSUL<I, Boolean>("MQ", sulSim);
         DFACacheOracle<I> cacheOracle = DFACacheOracle.createDAGCacheOracle(model.getInputAlphabet(), sulSim);
         mqCounter = new DFACounterOracle<>(cacheOracle, "MQ");
         EquivalenceOracle<DFA<?, I>, I, Boolean> ccTest = cacheOracle.createCacheConsistencyTest();
@@ -40,6 +41,10 @@ public class Teacher<I> implements MembershipCounter<I> {
         boolean output = mqCounter.answerQuery(inputString);
         history.put(inputString, output);
         return output;
+    }
+
+    public Counter getNumResetStates() {
+        return mqCounter.getStatisticalData();
     }
 
     public @Nullable DefaultQuery<I, Boolean> equivalenceQuery(DFA<?, I> hypothesis, Alphabet<? extends I> alphabet) {

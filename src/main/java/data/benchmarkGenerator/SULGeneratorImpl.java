@@ -125,12 +125,12 @@ class TestGenerator extends SULGenerator {
     protected DFAModelEditor updateModel(DFAModelEditor modelEditor) {
 
         //generate a new random dfa
-        int opt = rand.nextInt(4);
+        int opt = rand.nextInt(3);
         switch (opt) {
             case 0: // add new state
                 modelEditor.addState();
                 break;
-            case 4: // remove existing state
+            case 3: // remove existing state
                 if (modelEditor.getModel().getStates().size() < 2) {
                     return updateModel(modelEditor);
                 } else {
@@ -140,14 +140,13 @@ class TestGenerator extends SULGenerator {
             case 2: // add input symbol
                 modelEditor.addAlphabet();
                 break;
-            case 3: // remove alphabet
+            case 4: // remove alphabet
                 if (modelEditor.getModel().getInputAlphabet().size() < 2) {
                     return updateModel(modelEditor);
                 } else {
                     modelEditor.removeAlphabet();
                 }
                 break;
-
             case 1: // change tail state
                 modelEditor.changeTail();
                 break;
@@ -207,12 +206,12 @@ class SULGeneratorRandom extends SULGenerator {
 
 class Main {
     public static void main(String[] args) {
-        new SULGeneratorRandom().generate();
-        new SULGeneratorAddState().generate();
-        new SULGeneratorAddAlphabet().generate();
-        new SULGeneratorChangeTail().generate();
-        new SULGeneratorRemoveAlphabet().generate();
-        new SULGeneratorRemoveState().generate();
-//        new TestGenerator().generate();
+//        new SULGeneratorRandom().generate();
+//        new SULGeneratorAddState().generate();
+//        new SULGeneratorAddAlphabet().generate();
+//        new SULGeneratorChangeTail().generate();
+//        new SULGeneratorRemoveAlphabet().generate();
+//        new SULGeneratorRemoveState().generate();
+        new TestGenerator().generate();
     }
 }
