@@ -15,20 +15,20 @@ def visualize_model_learning_result(df: pd.DataFrame, name):
         id_vars=["algorithm", "id", "num_states", "num_alphabet", "distance"],
         var_name="query_type",
         value_name="query_count")
-    ax = sns.catplot(kind="box", hue="algorithm", y="query_count", col="query_type", col_wrap=1, data=df,
+    ax = sns.catplot(kind="box", hue="algorithm", y="query_count", col="query_type", col_wrap=1, dfa.data=df,
                      x="distance", sharex=False, sharey=False)
     ax.savefig(f"{basePath2}{name}_distance.png")
-    ax = sns.catplot(kind="box", y="query_count", x="algorithm", col="query_type", data=df, col_wrap=1,
+    ax = sns.catplot(kind="box", y="query_count", x="algorithm", col="query_type", dfa.data=df, col_wrap=1,
                      sharey=False)
 
     ax.savefig(f"{basePath2}{name}_total.png")
     plt.close()
 
 
-# df = pd.read_csv("results/data/random_10s_20a.csv")
+# df = pd.read_csv("results/dfa.data/random_10s_20a.csv")
 # visualize_model_learning_result(df, "random_10s_20a")
 
-basePath = "data"
+basePath = "dfa.data"
 
 methods = {
     "/DFA_random_learnLib",
