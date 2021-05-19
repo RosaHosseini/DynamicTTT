@@ -1,16 +1,17 @@
-package moore.dynamicTTT;
+package generic.dynamicTTT;
 
-import de.learnlib.api.query.DefaultQuery;
-import moore.TTT.MooreTTT;
+import generic.TTT.TTT;
 import generic.TTT.TTTNode;
-import moore.TTT.discriminiationTree.MooreDiscriminationTree;
+import generic.TTT.discriminationTree.DTLeaf;
+import generic.TTT.discriminationTree.DiscriminationTree;
+import generic.TTT.discriminationTree.EmptyDTLeaf;
 import generic.TTT.spanningTree.SpanningTree;
-import moore.dynamicTTT.discriminationTree.DynamicMealyDiscriminationTree;
-import moore.dynamicTTT.spanningTree.OutdatedSpanningTreeContainer;
-import moore.modelLearning.MooreModelLearner;
-import moore.modelLearning.MooreTeacher;
-import net.automatalib.automata.fsa.DFA;
-import net.automatalib.automata.fsa.impl.compact.CompactDFA;
+import generic.dynamicTTT.discriminationTree.DynamicDiscriminationTree;
+import generic.dynamicTTT.spanningTree.OutdatedSpanningTreeContainer;
+import generic.modelLearning.MembershipCounter;
+import generic.modelLearning.ModelLearner;
+import generic.modelLearning.Teacher;
+import net.automatalib.automata.MutableDeterministic;
 import net.automatalib.commons.util.Pair;
 import net.automatalib.visualization.DefaultVisualizationHelper;
 import net.automatalib.visualization.Visualization;
@@ -21,67 +22,64 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 
-public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembershipCounter<I> {
+public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I, Integer, O, Void>>
+        extends ModelLearner<I, O, A> implements MembershipCounter<I, O> {
 
-    private final MooreDiscriminationTree<I> outdatedDiscriminationTree;
-    private final List<TTTNode<I>> tempSpanningTree = new ArrayList<>();
-    private final HashMap<Word<I>, TTTNode<I>> equivalenceStateMap = new HashMap<>();
+    private final DiscriminationTree<I, O> outdatedDiscriminationTree;
+    private final List<TTTNode<I, O>> tempSpanningTree = new ArrayList<>();
+    private final HashMap<Word<I>, TTTNode<I, O>> equivalenceStateMap = new HashMap<>();
     private final Alphabet<I> alphabet;
-    private final CompactDFA<I> hypothesis;
-    private final DynamicMealyDiscriminationTree<I> discriminationTree;
-    private SpanningTree<I> spanningTree;
-    private final OutdatedSpanningTreeContainer<I> outdatedPrefixesContainer;
+    private final A hypothesis;
+    private final DynamicDiscriminationTree<I, O> discriminationTree;
+    private SpanningTree<I, O> spanningTree;
+    private final OutdatedSpanningTreeContainer<I, O> outdatedPrefixesContainer;
     private long eqCounter = 0L;
-    private boolean visualize = false;
+    private final boolean visualize;
 
 
-    public DynamicTTT(MooreTeacher<I> teacher,
-                      SpanningTree<I> outdatedSpanningTree,
-                      MooreDiscriminationTree<I> outdatedDiscriminationTree,
+    public DynamicTTT(Teacher<I, O, A> teacher,
+                      SpanningTree<I, O> outdatedSpanningTree,
+                      DiscriminationTree<I, O> outdatedDiscriminationTree,
                       Alphabet<I> updatedAlphabet,
+                      A hypothesis,
                       boolean visulaize) {
         super(teacher);
         this.alphabet = updatedAlphabet;
-        this.hypothesis = new CompactDFA<>(this.alphabet);
+        this.hypothesis = hypothesis;
         this.outdatedDiscriminationTree = outdatedDiscriminationTree;
-        this.discriminationTree = new DynamicMealyDiscriminationTree<>(this.teacher, this.alphabet);
-        this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
+        this.discriminationTree = initialDynamicDiscriminationTree();
+        this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<I, O>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
         this.visualize = visulaize;
     }
 
+    abstract protected DynamicDiscriminationTree<I, O> initialDynamicDiscriminationTree();
+
     @Override
-    public DFA<?, I> learn() {
+    public A learn() {
         try {
             reconstructHypothesis();
             completeHypothesis();
             cleanDiscriminationTree();
             if (visualize)
-                Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
+                Visualization.visualize(hypothesis, getHypothesisAlphabet(), new DefaultVisualizationHelper<>());
 
-            MooreTTT<I> tttLearner = new MooreTTT<>(
-                    teacher,
-                    this.alphabet,
-                    this.hypothesis,
-                    this.spanningTree,
-                    this.discriminationTree,
-                    new DiscriminatorTrie<>(this.alphabet)
-            );
+            TTT<I, O, A> tttLearner = initialTTT();
             tttLearner.finalizeHypothesis();
             while (true) {
-                @Nullable DefaultQuery<I, Boolean> eq = teacher.equivalenceQuery(tttLearner.getHypothesis(), alphabet);
+                @Nullable Word<I> ce = teacher.equivalenceQuery(tttLearner.getHypothesis(), alphabet);
                 eqCounter++;
 
-                if (eq == null) {
+                if (ce == null) {
                     tttLearner.finalizeHypothesis();
                     return tttLearner.getHypothesis();
                 }
                 if (visualize)
-                    System.out.println(eq.toString());
-                tttLearner.refineHypothesis(eq);
+                    System.out.println(ce);
+                tttLearner.refineHypothesis(ce);
 
                 tttLearner.stabilizeHypothesis();
                 if (visualize)
-                    Visualization.visualize(hypothesis, hypothesis.getInputAlphabet(), new DefaultVisualizationHelper<>());
+                    Visualization.visualize(hypothesis, getHypothesisAlphabet(), new DefaultVisualizationHelper<>());
 
             }
         } catch (
@@ -92,6 +90,8 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
 
     }
 
+    protected abstract TTT<I, O, A> initialTTT();
+
     public void reconstructHypothesis() throws Exception {
         discriminationTree.initialDiscriminationTree(outdatedDiscriminationTree);
 
@@ -101,9 +101,9 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
             Word<I> prefix = prefixIterator.next();
             if (tempSpanningTreeContain(prefix))
                 continue;
-            DTLeaf<I> pos = this.discriminationTree.sift(prefix);
+            DTLeaf<I, O> pos = this.discriminationTree.sift(prefix);
             if (pos instanceof EmptyDTLeaf) { // add a new state!
-                TTTNode<I> node = createState(prefix, true);
+                TTTNode<I, O> node = createState(prefix, true);
                 addToEquivalenceStateMap(node.sequenceAccess, node);
                 tempSpanningTree.add(node);
                 this.discriminationTree.discriminate(node, pos);
@@ -123,16 +123,16 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
     public void completeHypothesis() throws Exception {
         tempSpanningTree.sort(Comparator.comparingInt(o -> o.sequenceAccess.size()));
 
-        for (TTTNode<I> node : tempSpanningTree) {
-            Deque<Pair<TTTNode<I>, TTTNode<I>>> queue = new ArrayDeque<>();
+        for (TTTNode<I, O> node : tempSpanningTree) {
+            Deque<Pair<TTTNode<I, O>, TTTNode<I, O>>> queue = new ArrayDeque<>();
             if (node.sequenceAccess.size() == 0) { //initial node
                 spanningTree = new SpanningTree<>(node);
                 continue;
             }
-            Pair<TTTNode<I>, TTTNode<I>> pair = Pair.of(node, null);
+            Pair<TTTNode<I, O>, TTTNode<I, O>> pair = Pair.of(node, null);
             while (true) {
                 queue.addFirst(pair);
-                TTTNode<I> currNode = pair.getFirst();
+                TTTNode<I, O> currNode = pair.getFirst();
                 Word<I> sequence = currNode.sequenceAccess;
                 Word<I> prefix = currNode.sequenceAccess.prefix(sequence.size() - 1);
                 if (tempSpanningTreeContain(prefix))
@@ -140,7 +140,7 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
                 pair = discriminateLongestPrefix(currNode);
             }
 
-            for (Pair<TTTNode<I>, TTTNode<I>> p : queue) {
+            for (Pair<TTTNode<I, O>, TTTNode<I, O>> p : queue) {
                 boolean result = spanningTree.addState(p.getFirst());
                 expandStateTransitions(p.getFirst());
                 if (p.getSecond() != null)
@@ -162,14 +162,14 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
      * @param uaNode is a tttNode which we want to discriminate it form its longest prefix
      * @return the tttNode belong to the longest prefix of ua
      */
-    private Pair<TTTNode<I>, TTTNode<I>> discriminateLongestPrefix(TTTNode<I> uaNode) throws Exception {
+    private Pair<TTTNode<I, O>, TTTNode<I, O>> discriminateLongestPrefix(TTTNode<I, O> uaNode) throws Exception {
         Word<I> ua = uaNode.sequenceAccess;
         Word<I> u = ua.prefix(ua.size() - 1);
         I a = ua.lastSymbol();
-        TTTNode<I> vNode = equivalenceStateMap.get(u);
+        TTTNode<I, O> vNode = equivalenceStateMap.get(u);
         Word<I> v = vNode.sequenceAccess;
 
-        TTTNode<I> vaNode = equivalenceStateMap.get(v.append(a));
+        TTTNode<I, O> vaNode = equivalenceStateMap.get(v.append(a));
         Word<I> va = vaNode.sequenceAccess;
 
         // find discriminator between u and v
@@ -177,7 +177,7 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
         Word<I> newDiscriminator = new WordBuilder<I>().append(a).append(discriminator).toWord();
 
         // add new node to hypothesis
-        TTTNode<I> uNode = createState(u, false);
+        TTTNode<I, O> uNode = createState(u, false);
         addToEquivalenceStateMap(u, uNode);
         hypothesis.addTransition(uNode.id, a, uaNode.id);
 
@@ -191,13 +191,13 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
 
     /***
      * Check if a dfa has a specific transition from a origin
-     * @param dfa the DFA
+     * @param model an `A` model
      * @param originId the id of origin state
      * @param transition the symbol of transition
      * @return true if origin state has transition otherwise false
      */
-    private boolean hasTransition(CompactDFA<I> dfa, int originId, I transition) {
-        return dfa.getTransition(originId, transition) == null;
+    private boolean hasTransition(A model, int originId, I transition) {
+        return model.getTransition(originId, transition) == null;
     }
 
 
@@ -206,11 +206,11 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
      * @param sequenceAccess the sequence access of a state
      * @return a TTTNode of the given state
      */
-    private TTTNode<I> createState(Word<I> sequenceAccess, Boolean isTemp) {
-        boolean accepting = this.teacher.membershipQuery(sequenceAccess);
+    private TTTNode<I, O> createState(Word<I> sequenceAccess, Boolean isTemp) {
+        O output = this.teacher.membershipQuery(sequenceAccess);
         int state_id;
         if (sequenceAccess.size() > 0) { //if not initial state (check transition of prefix)
-            state_id = hypothesis.addState(accepting);
+            state_id = hypothesis.addState(output);
             Integer origin_id = hypothesis.getState(sequenceAccess.prefix(sequenceAccess.size() - 1));
             I transition = sequenceAccess.lastSymbol();
             if (isTemp) {
@@ -221,9 +221,9 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
                 hypothesis.addTransition(origin_id, transition, state_id);
             }
         } else { //if initial state
-            state_id = hypothesis.addInitialState(accepting);
+            state_id = hypothesis.addInitialState(output);
         }
-        return new TTTNode<>(state_id, sequenceAccess, accepting);
+        return new TTTNode<>(state_id, sequenceAccess, output);
     }
 
 
@@ -231,11 +231,11 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
      * for a given state update all transitions
      * @param node the TTTNode of a state
      */
-    private void expandStateTransitions(TTTNode<I> node) throws Exception {
+    private void expandStateTransitions(TTTNode<I, O> node) throws Exception {
         for (I symbol : alphabet) {
 
             Word<I> newSequence = node.sequenceAccess.append(symbol);
-            DTLeaf<I> newPose = discriminationTree.sift(newSequence);
+            DTLeaf<I, O> newPose = discriminationTree.sift(newSequence);
 
             int destStateId;
             if (newPose instanceof EmptyDTLeaf) {
@@ -259,7 +259,7 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
         Collection<Word<I>> sequences = getAllSequenceAccesses(destId);
 
         for (Word<I> sequence : sequences) {
-            DTLeaf<I> leaf = discriminationTree.sift(sequence);
+            DTLeaf<I, O> leaf = discriminationTree.sift(sequence);
             if (leaf instanceof EmptyDTLeaf) {
                 throw new Exception("sequence" + sequence + "is not valid in discrimination Tree!");
             } else {
@@ -286,7 +286,7 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
         for (int state : states) {
             for (I symbol : alphabet) {
                 if (hypothesis.getSuccessor(state, symbol) == stateId) {
-                    TTTNode<I> spanningNode = spanningTree.getState(state);
+                    @Nullable TTTNode<I, O> spanningNode = spanningTree.getState(state);
                     if (spanningNode != null)
                         sequences.add(spanningNode.sequenceAccess.append(symbol));
                 }
@@ -296,26 +296,23 @@ public class DynamicTTT<I> extends MooreModelLearner<I> implements MealyMembersh
     }
 
 
-    private void addToEquivalenceStateMap(Word<I> sequence, TTTNode<I> node) {
+    private void addToEquivalenceStateMap(Word<I> sequence, TTTNode<I, O> node) {
         equivalenceStateMap.put(sequence, node);
     }
 
 
     public boolean tempSpanningTreeContain(Word<I> prefix) {
-        for (TTTNode<I> node : tempSpanningTree) {
+        for (TTTNode<I, O> node : tempSpanningTree) {
             if (node.sequenceAccess.equals(prefix))
                 return true;
         }
         return false;
     }
 
-    @Override
-    public Word<O> membershipQuery(Word<I> inputString) {
-        return hypothesis.computeOutput(inputString);
-    }
-
 
     public long getEQCounter() {
         return eqCounter;
     }
+
+    protected abstract Alphabet<I> getHypothesisAlphabet();
 }

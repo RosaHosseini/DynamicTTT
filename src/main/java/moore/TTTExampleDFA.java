@@ -1,7 +1,6 @@
 package moore;
 
 import moore.TTT.MooreTTT;
-import moore.data.ResultWriter;
 import moore.data.benchmarkReader.SULReader;
 import moore.data.utils.DFAConstants;
 import moore.dynamicTTT.DynamicTTT;
