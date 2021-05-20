@@ -258,7 +258,7 @@ public class DFADiscriminationTree<I> extends DiscriminationTree<I, Boolean> {
     @Override
     public Boolean findAccessorToFather(DiscriminationNode<I, Boolean> node) {
         DFADiscriminatorNode<I> parent = (DFADiscriminatorNode<I>) node.parent;
-        return parent.solidChild == node;
+        return parent.dashedChild == node;
     }
 
 }
