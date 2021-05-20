@@ -32,29 +32,29 @@ public class TTTExampleDFA {
         ResultWriter writer = new ResultWriter();
         List<ModelLearningInfo> results;
 
-        test();
-//        String basePath = "results/dfa.data";
-//        String[] methods = {
-//                "/DFA_random_learnLib",
-////                "/DFA_change_tail_learnLib",
-////                "/DFA_remove_alphabet_learnLib",
-////                "/DFA_add_alphabet_learnLib",
-////                "/DFA_remove_state_learnLib",
-////                "/DFA_add_state_learnLib",
-////                "/test"
-//        };
-//        EQMethod eqMethod = EQMethod.WP;
-//        for (String method : methods) {
+//        test();
+        String basePath = "results/dfa.data";
+        String[] methods = {
+                "/DFA_random_learnLib",
+//                "/DFA_change_tail_learnLib",
+//                "/DFA_remove_alphabet_learnLib",
+//                "/DFA_add_alphabet_learnLib",
+//                "/DFA_remove_state_learnLib",
+//                "/DFA_add_state_learnLib",
+//                "/test"
+        };
+        EQMethod eqMethod = EQMethod.WP;
+        for (String method : methods) {
+
+            results = test2(method, 5, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_5a.csv");
+
+            results = test2(method, 10, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
 //
-//            results = test2(method, 5, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_5a.csv");
-//
-//            results = test2(method, 10, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
-////
-////            results = test2(method, 50, eqMethod, false);
-////            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
-//        }
+//            results = test2(method, 50, eqMethod, false);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
+        }
     }
 
 

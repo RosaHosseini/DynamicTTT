@@ -288,10 +288,13 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         Collection<Integer> states = hypothesis.getStates();
         for (int state : states) {
             for (I symbol : alphabet) {
-                if (hypothesis.getSuccessor(state, symbol) == stateId) {
-                    @Nullable TTTNode<I, O> spanningNode = spanningTree.getState(state);
-                    if (spanningNode != null)
-                        sequences.add(spanningNode.sequenceAccess.append(symbol));
+                try { //todo remove this try!
+                    if (hypothesis.getSuccessor(state, symbol) == stateId) {
+                        @Nullable TTTNode<I, O> spanningNode = spanningTree.getState(state);
+                        if (spanningNode != null)
+                            sequences.add(spanningNode.sequenceAccess.append(symbol));
+                    }
+                }catch (Exception ignored){
                 }
             }
         }
