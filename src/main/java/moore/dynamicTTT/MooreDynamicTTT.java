@@ -29,6 +29,7 @@ public class MooreDynamicTTT<I, O> extends DynamicTTT<I, O, MutableMooreMachine<
             boolean visulaize) {
         super(teacher, outdatedSpanningTree, outdatedDiscriminationTree, updatedAlphabet, hypothesis, visulaize);
         this.outputAlphabet = outputAlphabet;
+        this.discriminationTree = initialDynamicDiscriminationTree();
     }
 
     @Override

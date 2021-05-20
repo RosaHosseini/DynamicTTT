@@ -61,7 +61,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
                 System.out.println("counter example " + ce);
                 refineHypothesis(ce);
                 stabilizeHypothesis();
-                finalizeHypothesis();
+                finalizeHypothesis(); //todo fix this
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

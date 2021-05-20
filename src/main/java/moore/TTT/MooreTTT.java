@@ -33,17 +33,13 @@ public class MooreTTT<I, O> extends TTT<I, O, MutableMooreMachine<Integer, I, In
 
     }
 
-
     @Override
     protected DiscriminationTree<I, O> initializeDiscriminationTree() {
         return new MooreDiscriminationTree<>(this.teacher, outputAlphabet);
     }
 
-
     @Override
     public O membershipQuery(Word<I> inputString) {
-        return getHypothesis().computeOutput(inputString).lastSymbol();
+        return getHypothesis().getStateOutput(getHypothesis().getState(inputString));
     }
-
-
 }

@@ -31,7 +31,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
     protected final HashMap<Word<I>, TTTNode<I, O>> equivalenceStateMap = new HashMap<>();
     protected final Alphabet<I> alphabet;
     protected final A hypothesis;
-    protected final DynamicDiscriminationTree<I, O> discriminationTree;
+    protected DynamicDiscriminationTree<I, O> discriminationTree;
     protected SpanningTree<I, O> spanningTree;
     protected final OutdatedSpanningTreeContainer<I, O> outdatedPrefixesContainer;
     protected long eqCounter = 0L;
@@ -48,8 +48,8 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         this.alphabet = updatedAlphabet;
         this.hypothesis = hypothesis;
         this.outdatedDiscriminationTree = outdatedDiscriminationTree;
-        this.discriminationTree = initialDynamicDiscriminationTree();
-        this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<I, O>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
+//        this.discriminationTree = initialDynamicDiscriminationTree();
+        this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
         this.visualize = visulaize;
     }
 

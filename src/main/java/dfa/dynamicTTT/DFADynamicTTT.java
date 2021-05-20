@@ -25,6 +25,7 @@ public class DFADynamicTTT<I> extends DynamicTTT<I, Boolean, MutableDFA<Integer,
             boolean visulaize
     ) {
         super(teacher, outdatedSpanningTree, outdatedDiscriminationTree, updatedAlphabet, hypothesis, visulaize);
+        this.discriminationTree = initialDynamicDiscriminationTree();
     }
 
     @Override

@@ -21,12 +21,12 @@ public class MooreDynamicDiscriminationTree<I, O> extends DynamicDiscriminationT
             Alphabet<O> outputAlphabet,
             Alphabet<I> alphabet
     ) {
-        super(membershipCounter);
-        this.outputAlphabet = outputAlphabet;
+        super();
         this.alphabet = alphabet;
+        this.outputAlphabet = outputAlphabet;
+        DT = createBaseDiscriminationTree(membershipCounter);
     }
 
-    @Override
     protected DiscriminationTree<I, O> createBaseDiscriminationTree(MembershipCounter<I, O> membershipCounter) {
         return new MooreDiscriminationTree<>(membershipCounter, outputAlphabet);
     }

@@ -18,8 +18,8 @@ public class DFADynamicDiscriminationTree<I> extends DynamicDiscriminationTree<I
 
     public DFADynamicDiscriminationTree(MembershipCounter<I, Boolean> membershipCounter, Alphabet<I> alphabet
     ) {
-        super(membershipCounter);
         this.alphabet = alphabet;
+        DT = createBaseDiscriminationTree(membershipCounter);
     }
 
     protected DFADiscriminationTree<I> createBaseDiscriminationTree(

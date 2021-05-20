@@ -23,6 +23,7 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
 
     public CounterOracle<I, Word<O>> mooreMqOracle;
     public EquivalenceOracle<MooreMachine<?, I, ?, O>, I, Word<O>> mooreEqOracle;
+    private final MutableMooreMachine<Integer, I, Integer, O> hypothesis;
 
     public MooreTeacher(CompactMoore<I, O> model, EQMethod eqOption, boolean withMemory) {
         super(model, withMemory);
@@ -30,16 +31,18 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
         // Setup objects related to MQs	//
         //////////////////////////////////
 
+        hypothesis = model;
+
         MembershipOracle<I, Word<O>> membershipOracle = new SimulatorOracle<>(model);
-        MealyCacheOracle<I, O> cacheOracle = MealyCacheOracle.createDAGCacheOracle(model.getInputAlphabet(), membershipOracle);
-        mooreMqOracle = new CounterOracle<>(cacheOracle, "MQ");
+//        MealyCacheOracle<I, O> cacheOracle = MealyCacheOracle.createDAGCacheOracle(model.getInputAlphabet(), membershipOracle);
+        mooreMqOracle = new CounterOracle<>(membershipOracle, "MQ");
 
         //////////////////////////////////
         // Setup objects related to MQs	//
         //////////////////////////////////
         MembershipOracle<I, Word<O>> eOracle = new SimulatorOracle<>(model);
-        MealyCacheOracle<I, O> eqCacheOracle = MealyCacheOracle.createDAGCacheOracle(model.getInputAlphabet(), eOracle);
-        CounterOracle<I, Word<O>> eqCounter = new CounterOracle<>(eqCacheOracle, "EQ");
+//        MealyCacheOracle<I, O> eqCacheOracle = MealyCacheOracle.createDAGCacheOracle(model.getInputAlphabet(), eOracle);
+        CounterOracle<I, Word<O>> eqCounter = new CounterOracle<>(eOracle, "EQ");
         mooreEqOracle = buildEqOracle(new Random(System.currentTimeMillis()), eqOption, eqCounter);
     }
 
@@ -65,18 +68,23 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
 
 
     public O membershipQuery(Word<I> inputString) {
+
         if (withMemory)
             if (history.containsKey(inputString))
                 return history.get(inputString);
 
-        O response = mooreMqOracle.answerQuery(inputString).lastSymbol();
+        O response;
+        if (inputString.length() == 0)
+            response = hypothesis.getStateOutput(hypothesis.getState(inputString));
+        else
+            response = mooreMqOracle.answerQuery(inputString).lastSymbol();
         if (withMemory)
             history.put(inputString, response);
         return response;
     }
 
     public @Nullable Word<I> equivalenceQuery(
-            MooreMachine<?, I, ?, O> hypothesis,
+            MutableMooreMachine<Integer, I, Integer, O> hypothesis,
             Alphabet<? extends I> alphabet
     ) {
         DefaultQuery<I, Word<O>> eq = mooreEqOracle.findCounterExample(hypothesis, alphabet);

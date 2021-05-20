@@ -13,10 +13,10 @@ public abstract class DynamicDiscriminationTree<I, O> implements DiscriminationT
 
     protected DiscriminationTree<I, O> DT;
 
-    public DynamicDiscriminationTree(MembershipCounter<I, O> membershipCounter) {
-        DT = createBaseDiscriminationTree(membershipCounter);
-    }
 
+//    public DynamicDiscriminationTree(MembershipCounter<I, O> membershipCounter) {
+//        DT = createBaseDiscriminationTree(membershipCounter);
+//    }
 
     protected abstract DiscriminationTree<I, O> createBaseDiscriminationTree(
             MembershipCounter<I, O> membershipCounter
