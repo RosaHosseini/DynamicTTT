@@ -8,6 +8,7 @@ public class ModelLearningInfo {
     public int distance;
     public String algorithm;
     public int id;
+    public long duration;
 
 
     public ModelLearningInfo(
@@ -17,7 +18,8 @@ public class ModelLearningInfo {
             int numAlphabet,
             int distance,
             String algorithm,
-            int id
+            int id,
+            long duration
     ) {
         this.MQCount = MQCount;
         this.EQCount = EQCount;
@@ -26,5 +28,6 @@ public class ModelLearningInfo {
         this.distance = distance;
         this.algorithm = algorithm;
         this.id = id;
+        this.duration = duration;
     }
 }

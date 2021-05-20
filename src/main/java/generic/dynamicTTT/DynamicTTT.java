@@ -3,7 +3,6 @@ package generic.dynamicTTT;
 import generic.TTT.TTT;
 import generic.TTT.TTTNode;
 import generic.TTT.discriminationTree.DTLeaf;
-import generic.TTT.discriminationTree.DiscriminationTree;
 import generic.TTT.discriminationTree.DiscriminationTreeInterface;
 import generic.TTT.discriminationTree.EmptyDTLeaf;
 import generic.TTT.spanningTree.SpanningTree;
@@ -65,12 +64,13 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
 
             TTT<I, O, A> tttLearner = initialTTT();
             tttLearner.finalizeHypothesis();
+
             while (true) {
                 @Nullable Word<I> ce = teacher.equivalenceQuery(tttLearner.getHypothesis(), alphabet);
                 eqCounter++;
 
                 if (ce == null) {
-                    tttLearner.finalizeHypothesis();
+//                    tttLearner.finalizeHypothesis();
                     return tttLearner.getHypothesis();
                 }
                 if (visualize)
@@ -78,6 +78,8 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                 tttLearner.refineHypothesis(ce);
 
                 tttLearner.stabilizeHypothesis();
+                tttLearner.finalizeHypothesis(); //todo fix this
+
                 if (visualize)
                     Visualization.visualize(hypothesis, this.alphabet, new DefaultVisualizationHelper<>());
 

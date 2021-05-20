@@ -28,19 +28,17 @@ public class TTTExampleDFA {
     }
 
     public static void main(String[] args) throws Exception {
-        //dfa.TTT
         ResultWriter writer = new ResultWriter();
         List<ModelLearningInfo> results;
 
-//        test();
         String basePath = "results/dfa.data";
         String[] methods = {
                 "/DFA_random_learnLib",
-//                "/DFA_change_tail_learnLib",
-//                "/DFA_remove_alphabet_learnLib",
-//                "/DFA_add_alphabet_learnLib",
-//                "/DFA_remove_state_learnLib",
-//                "/DFA_add_state_learnLib",
+                "/DFA_change_tail_learnLib",
+                "/DFA_remove_alphabet_learnLib",
+                "/DFA_add_alphabet_learnLib",
+                "/DFA_remove_state_learnLib",
+                "/DFA_add_state_learnLib",
 //                "/test"
         };
         EQMethod eqMethod = EQMethod.WP;
@@ -51,9 +49,9 @@ public class TTTExampleDFA {
 
             results = test2(method, 10, eqMethod, false);
             writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
-//
-//            results = test2(method, 50, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
+
+            results = test2(method, 50, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
         }
     }
 
@@ -135,6 +133,8 @@ public class TTTExampleDFA {
     public static List<ModelLearningInfo> test2(String method, int stateNum, EQMethod eqOption, Boolean visualize) {
         List<ModelLearningInfo> results = new ArrayList<>();
 
+        long start, end;
+
         int id = 0;
 
         out:
@@ -175,14 +175,16 @@ public class TTTExampleDFA {
                             new CompactDFA<>(dfa.getInputAlphabet()),
                             visualize
                     );
+                    start = getCurrentTimestamp();
                     DFA<?, String> updatedHypothesis = dynamicTTTLearner.learn();
+                    end = getCurrentTimestamp();
                     if (updatedHypothesis == null)
                         throw new Exception("what");
                     long dMQ = teacher.getMQCount();
                     long dEQ = dynamicTTTLearner.getEQCounter();
                     System.out.println(dEQ + ", " + dMQ);
                     results.add(new ModelLearningInfo(
-                            dMQ, dEQ, stateNum, DFAConstants.ALPHABET_SIZE, j, "dfa/dynamicTTT", id)
+                            dMQ, dEQ, stateNum, DFAConstants.ALPHABET_SIZE, j, "dfa/dynamicTTT", id, end-start)
                     );
 
 
@@ -191,15 +193,17 @@ public class TTTExampleDFA {
                     dfa = new DFASULReader().parseDFAFromDot(f);
                     teacher = new DFATeacher<>(dfa, eqOption,true);
                     teacher.mqOracle.getCount();
+                    start = getCurrentTimestamp();
                     DFATTT<String> tttLearner2 = new DFATTT<>(teacher, dfa.getInputAlphabet());
                     DFA<?, String> hyp = tttLearner2.learn();
+                    end= getCurrentTimestamp();
                     if (hyp == null)
                         throw new Exception("what");
                     long MQ = teacher.getMQCount();
                     long EQ = tttLearner2.getEQCounter();
                     System.out.println(EQ + ", " + MQ);
                     results.add(new ModelLearningInfo(
-                            MQ, EQ, stateNum, DFAConstants.ALPHABET_SIZE, j, "dfa/TTT", id)
+                            MQ, EQ, stateNum, DFAConstants.ALPHABET_SIZE, j, "dfa/TTT", id, end-start)
                     );
 //                    //dfa.TTT learnlib
 //                    path = BASE_BENCHMARK_PATH + method + state + p + "/v_00" + j + ".dot";
@@ -224,6 +228,10 @@ public class TTTExampleDFA {
             }
         }
         return results;
+    }
+
+    private static long getCurrentTimestamp(){
+        return System.currentTimeMillis();
     }
 
 }

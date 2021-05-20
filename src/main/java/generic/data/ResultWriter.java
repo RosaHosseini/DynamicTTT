@@ -14,7 +14,7 @@ public class ResultWriter {
         csvOutputFile.getParentFile().mkdirs();// if file already exists will do nothing
         csvOutputFile.createNewFile();
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
-            String CSVHeader = "algorithm,id,num_states,num_alphabet,eq_count,mq_count,distance";
+            String CSVHeader = "algorithm,id,num_states,num_alphabet,eq_count,mq_count,distance,duration";
             pw.println(CSVHeader);
             results.stream()
                     .map(this::covertToCSVRow)
@@ -30,6 +30,7 @@ public class ResultWriter {
                 "," + data.NumAlphabet +
                 "," + data.EQCount +
                 "," + data.MQCount +
-                "," + data.distance;
+                "," + data.distance +
+                "," + data.duration;
     }
 }

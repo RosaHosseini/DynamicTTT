@@ -1,12 +1,11 @@
 import os
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
 
 def visualize_model_learning_result(df: pd.DataFrame, name):
-    basePath2 = "plots"
+    basePath2 = "dfa.plots"
     dirname = os.path.dirname(f"{basePath2}{name}_total.png")
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -15,10 +14,10 @@ def visualize_model_learning_result(df: pd.DataFrame, name):
         id_vars=["algorithm", "id", "num_states", "num_alphabet", "distance"],
         var_name="query_type",
         value_name="query_count")
-    ax = sns.catplot(kind="box", hue="algorithm", y="query_count", col="query_type", col_wrap=1, dfa.data=df,
+    ax = sns.catplot(kind="box", hue="algorithm", y="query_count", col="query_type", col_wrap=1, data=df,
                      x="distance", sharex=False, sharey=False)
     ax.savefig(f"{basePath2}{name}_distance.png")
-    ax = sns.catplot(kind="box", y="query_count", x="algorithm", col="query_type", dfa.data=df, col_wrap=1,
+    ax = sns.catplot(kind="box", y="query_count", x="algorithm", col="query_type", data=df, col_wrap=1,
                      sharey=False)
 
     ax.savefig(f"{basePath2}{name}_total.png")
