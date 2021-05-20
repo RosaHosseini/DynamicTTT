@@ -4,6 +4,7 @@ import generic.TTT.TTT;
 import generic.TTT.TTTNode;
 import generic.TTT.discriminationTree.DTLeaf;
 import generic.TTT.discriminationTree.DiscriminationTree;
+import generic.TTT.discriminationTree.DiscriminationTreeInterface;
 import generic.TTT.discriminationTree.EmptyDTLeaf;
 import generic.TTT.spanningTree.SpanningTree;
 import generic.dynamicTTT.discriminationTree.DynamicDiscriminationTree;
@@ -25,21 +26,21 @@ import java.util.*;
 public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I, Integer, O, Void>>
         extends ModelLearner<I, O, A> implements MembershipCounter<I, O> {
 
-    private final DiscriminationTree<I, O> outdatedDiscriminationTree;
-    private final List<TTTNode<I, O>> tempSpanningTree = new ArrayList<>();
-    private final HashMap<Word<I>, TTTNode<I, O>> equivalenceStateMap = new HashMap<>();
-    private final Alphabet<I> alphabet;
-    private final A hypothesis;
-    private final DynamicDiscriminationTree<I, O> discriminationTree;
-    private SpanningTree<I, O> spanningTree;
-    private final OutdatedSpanningTreeContainer<I, O> outdatedPrefixesContainer;
-    private long eqCounter = 0L;
-    private final boolean visualize;
+    protected final DiscriminationTreeInterface<I, O> outdatedDiscriminationTree;
+    protected final List<TTTNode<I, O>> tempSpanningTree = new ArrayList<>();
+    protected final HashMap<Word<I>, TTTNode<I, O>> equivalenceStateMap = new HashMap<>();
+    protected final Alphabet<I> alphabet;
+    protected final A hypothesis;
+    protected final DynamicDiscriminationTree<I, O> discriminationTree;
+    protected SpanningTree<I, O> spanningTree;
+    protected final OutdatedSpanningTreeContainer<I, O> outdatedPrefixesContainer;
+    protected long eqCounter = 0L;
+    protected final boolean visualize;
 
 
     public DynamicTTT(Teacher<I, O, A> teacher,
                       SpanningTree<I, O> outdatedSpanningTree,
-                      DiscriminationTree<I, O> outdatedDiscriminationTree,
+                      DiscriminationTreeInterface<I, O> outdatedDiscriminationTree,
                       Alphabet<I> updatedAlphabet,
                       A hypothesis,
                       boolean visulaize) {
@@ -52,7 +53,6 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         this.visualize = visulaize;
     }
 
-    abstract protected DynamicDiscriminationTree<I, O> initialDynamicDiscriminationTree();
 
     @Override
     public A learn() {
@@ -61,7 +61,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
             completeHypothesis();
             cleanDiscriminationTree();
             if (visualize)
-                Visualization.visualize(hypothesis, getHypothesisAlphabet(), new DefaultVisualizationHelper<>());
+                Visualization.visualize(hypothesis, this.alphabet, new DefaultVisualizationHelper<>());
 
             TTT<I, O, A> tttLearner = initialTTT();
             tttLearner.finalizeHypothesis();
@@ -79,7 +79,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
 
                 tttLearner.stabilizeHypothesis();
                 if (visualize)
-                    Visualization.visualize(hypothesis, getHypothesisAlphabet(), new DefaultVisualizationHelper<>());
+                    Visualization.visualize(hypothesis, this.alphabet, new DefaultVisualizationHelper<>());
 
             }
         } catch (
@@ -91,6 +91,9 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
     }
 
     protected abstract TTT<I, O, A> initialTTT();
+
+    abstract protected DynamicDiscriminationTree<I, O> initialDynamicDiscriminationTree();
+
 
     public void reconstructHypothesis() throws Exception {
         discriminationTree.initialDiscriminationTree(outdatedDiscriminationTree);
@@ -314,5 +317,4 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         return eqCounter;
     }
 
-    protected abstract Alphabet<I> getHypothesisAlphabet();
 }

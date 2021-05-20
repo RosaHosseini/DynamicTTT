@@ -1,12 +1,12 @@
 package dfa;
 
-import generic.modelLearning.EQMethod;
-import dfa.TTT.TTT;
+import dfa.TTT.DFATTT;
 import dfa.data.DFASULReader;
 import dfa.data.utils.DFAConstants;
-import dfa.dynamicTTT.DynamicTTT;
+import dfa.dynamicTTT.DFADynamicTTT;
 import dfa.modelLearning.DFATeacher;
 import generic.data.ResultWriter;
+import generic.modelLearning.EQMethod;
 import generic.modelLearning.ModelLearningInfo;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
@@ -35,11 +35,11 @@ public class TTTExampleDFA {
         String basePath = "results/dfa.data";
         String[] methods = {
                 "/DFA_random_learnLib",
-                "/DFA_change_tail_learnLib",
-                "/DFA_remove_alphabet_learnLib",
-                "/DFA_add_alphabet_learnLib",
-                "/DFA_remove_state_learnLib",
-                "/DFA_add_state_learnLib",
+//                "/DFA_change_tail_learnLib",
+//                "/DFA_remove_alphabet_learnLib",
+//                "/DFA_add_alphabet_learnLib",
+//                "/DFA_remove_state_learnLib",
+//                "/DFA_add_state_learnLib",
 //                "/test"
         };
         EQMethod eqMethod = EQMethod.WP;
@@ -51,8 +51,8 @@ public class TTTExampleDFA {
             results = test2(method, 10, eqMethod, false);
             writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
 //
-            results = test2(method, 50, eqMethod, false);
-            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
+//            results = test2(method, 50, eqMethod, false);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
         }
     }
 
@@ -97,8 +97,8 @@ public class TTTExampleDFA {
 
     public static void test() throws Exception {
         CompactDFA<String> dfa = generateOutdatedModel();
-        DFATeacher<String> teacher = new DFATeacher<>(dfa, EQMethod.W);
-        TTT<String> tttLearner = new TTT<>(teacher, dfa.getInputAlphabet());
+        DFATeacher<String> teacher = new DFATeacher<>(dfa, EQMethod.W, true);
+        DFATTT<String> tttLearner = new DFATTT<>(teacher, dfa.getInputAlphabet());
         DFA<?, String> hypothesis = tttLearner.learn();
         if (hypothesis == null)
             throw new Exception("error in outdated ttt");
@@ -106,8 +106,15 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
 
         CompactDFA<String> dfa2 = generateUpdatedModel();
-        DFATeacher<String> teacher2 = new DFATeacher<>(dfa2, EQMethod.W);
-        DynamicTTT<String> dynamicLearner = new DynamicTTT<>(teacher2, tttLearner.getSpanningTree(), tttLearner.getDiscriminationTree(), dfa2.getInputAlphabet(), false);
+        DFATeacher<String> teacher2 = new DFATeacher<>(dfa2, EQMethod.W, true);
+        DFADynamicTTT<String> dynamicLearner = new DFADynamicTTT<>(
+                teacher2,
+                tttLearner.getSpanningTree(),
+                tttLearner.getDiscriminationTree(),
+                dfa2.getInputAlphabet(),
+                new CompactDFA<>(dfa2.getInputAlphabet()),
+                false
+        );
         DFA<?, String> hypothesis2 = dynamicLearner.learn();
         if (hypothesis2 == null)
             throw new Exception("error in dynamic dfa.TTT");
@@ -115,8 +122,8 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
 
 
-        DFATeacher<String> teacher3 = new DFATeacher<>(dfa2, EQMethod.W);
-        TTT<String> ttt2 = new TTT<>(teacher3, dfa2.getInputAlphabet());
+        DFATeacher<String> teacher3 = new DFATeacher<>(dfa2, EQMethod.W,true);
+        DFATTT<String> ttt2 = new DFATTT<>(teacher3, dfa2.getInputAlphabet());
         DFA<?, String> hypothesis3 = ttt2.learn();
         if (hypothesis3 == null)
             throw new Exception("error in updated dfa.TTT");
@@ -142,7 +149,7 @@ public class TTTExampleDFA {
                     System.out.println("dfa/TTT" + path);
                     CompactDFA<String> dfa = new DFASULReader().parseDFAFromDot(f);
 
-                    TTT<String> tttLearner = new TTT<>(new DFATeacher<>(dfa, eqOption), dfa.getInputAlphabet());
+                    DFATTT<String> tttLearner = new DFATTT<>(new DFATeacher<>(dfa, eqOption,true), dfa.getInputAlphabet());
                     DFA<?, String> hypothesis = tttLearner.learn();
                     if (hypothesis == null)
                         throw new Exception("what");
@@ -155,14 +162,16 @@ public class TTTExampleDFA {
                     f = new File(path);
                     System.out.println("Dynamic dfa.TTT" + path);
                     dfa = new DFASULReader().parseDFAFromDot(f);
-                    DFATeacher<String> teacher = new DFATeacher<>(dfa, eqOption);
+                    DFATeacher<String> teacher = new DFATeacher<>(dfa, eqOption,true);
                     teacher.mqOracle.getCount();
                     if (visualize)
                         Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
-                    DynamicTTT<String> dynamicTTTLearner = new DynamicTTT<>(teacher,
+                    DFADynamicTTT<String> dynamicTTTLearner = new DFADynamicTTT<>(
+                            teacher,
                             tttLearner.getSpanningTree(),
                             tttLearner.getDiscriminationTree(),
                             dfa.getInputAlphabet(),
+                            new CompactDFA<>(dfa.getInputAlphabet()),
                             visualize
                     );
                     DFA<?, String> updatedHypothesis = dynamicTTTLearner.learn();
@@ -179,9 +188,9 @@ public class TTTExampleDFA {
                     //dfa.TTT
                     System.out.println("TTT2       " + path);
                     dfa = new DFASULReader().parseDFAFromDot(f);
-                    teacher = new DFATeacher<>(dfa, eqOption);
+                    teacher = new DFATeacher<>(dfa, eqOption,true);
                     teacher.mqOracle.getCount();
-                    TTT<String> tttLearner2 = new TTT<>(teacher, dfa.getInputAlphabet());
+                    DFATTT<String> tttLearner2 = new DFATTT<>(teacher, dfa.getInputAlphabet());
                     DFA<?, String> hyp = tttLearner2.learn();
                     if (hyp == null)
                         throw new Exception("what");

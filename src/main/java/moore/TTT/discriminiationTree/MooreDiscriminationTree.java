@@ -103,7 +103,7 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
     }
 
     @Override
-    protected @Nullable DiscriminationNode<I, O> findLCA
+    public  @Nullable DiscriminationNode<I, O> findLCA
             (DiscriminationNode<I, O> node, Word<I> word1, Word<I> word2) {
         if (node instanceof EmptyDTLeaf)
             return null;

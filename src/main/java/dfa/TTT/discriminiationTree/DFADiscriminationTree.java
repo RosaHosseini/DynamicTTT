@@ -212,7 +212,7 @@ public class DFADiscriminationTree<I> extends DiscriminationTree<I, Boolean> {
     }
 
 
-    protected @Nullable DiscriminationNode<I, Boolean> findLCA(DiscriminationNode<I, Boolean> node, Word<I> word1, Word<I> word2) {
+    public  @Nullable DiscriminationNode<I, Boolean> findLCA(DiscriminationNode<I, Boolean> node, Word<I> word1, Word<I> word2) {
         if (node instanceof EmptyDTLeaf)
             return null;
         if (node instanceof DTLeaf) {

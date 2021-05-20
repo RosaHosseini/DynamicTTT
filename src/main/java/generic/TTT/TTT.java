@@ -1,6 +1,5 @@
 package generic.TTT;
 
-import de.learnlib.api.query.DefaultQuery;
 import generic.TTT.discriminationTree.*;
 import generic.TTT.discriminatorTrie.DiscriminatorTrie;
 import generic.TTT.spanningTree.SpanningTree;
@@ -22,7 +21,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
     private final Alphabet<I> alphabet;
     private final A hypothesis;
     private SpanningTree<I, O> spanningTree;
-    private DiscriminationTree<I, O> discriminationTree;
+    private DiscriminationTreeInterface<I, O> discriminationTree;
     private DiscriminatorTrie<I, O> discriminatorTrie;
     private Deque<Word<I>> tempDiscriminators = new ArrayDeque<>();
     private long eqCounter = 0L;
@@ -38,7 +37,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
                Alphabet<I> initialAlphabet,
                A hypothesis,
                SpanningTree<I, O> spanningTree,
-               DiscriminationTree<I, O> discriminationTree,
+               DiscriminationTreeInterface<I, O> discriminationTree,
                DiscriminatorTrie<I, O> discriminatorTrie) {
         super(teacher);
         this.alphabet = initialAlphabet;
@@ -219,7 +218,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
         }
     }
 
-    protected abstract DiscriminationTree<I, O> initializeDiscriminationTree();
+    protected abstract DiscriminationTreeInterface<I, O> initializeDiscriminationTree();
 
 
     /***
@@ -374,7 +373,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
         return spanningTree;
     }
 
-    public DiscriminationTree<I, O> getDiscriminationTree() {
+    public DiscriminationTreeInterface<I, O> getDiscriminationTree() {
         return discriminationTree;
     }
 

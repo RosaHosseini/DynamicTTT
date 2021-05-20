@@ -2,6 +2,7 @@ package moore.TTT;
 
 import generic.TTT.TTT;
 import generic.TTT.discriminationTree.DiscriminationTree;
+import generic.TTT.discriminationTree.DiscriminationTreeInterface;
 import generic.TTT.discriminatorTrie.DiscriminatorTrie;
 import generic.TTT.spanningTree.SpanningTree;
 import generic.modelLearning.MembershipCounter;
@@ -23,9 +24,9 @@ public class MooreTTT<I, O> extends TTT<I, O, MutableMooreMachine<Integer, I, In
     public MooreTTT(MooreTeacher<I, O> teacher,
                     Alphabet<I> initialAlphabet,
                     Alphabet<O> outputAlphabet,
-                    CompactMoore<I, O> hypothesis,
+                    MutableMooreMachine<Integer, I, Integer, O> hypothesis,
                     SpanningTree<I, O> spanningTree,
-                    MooreDiscriminationTree<I, O> discriminationTree,
+                    DiscriminationTreeInterface<I, O> discriminationTree,
                     DiscriminatorTrie<I, O> discriminatorTrie) {
         super(teacher, initialAlphabet, hypothesis, spanningTree, discriminationTree, discriminatorTrie);
         this.outputAlphabet = outputAlphabet;

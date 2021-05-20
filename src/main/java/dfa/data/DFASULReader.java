@@ -1,6 +1,5 @@
 package dfa.data;
 
-import moore.data.benchmarkReader.SULReader;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.Alphabets;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DFASULReader extends SULReader {
+public class DFASULReader {
 
     public CompactDFA<String> parseDFAFromDot(File file) throws Exception {
         Pattern statePattern = Pattern.compile("\\s*([a-zA-Z0-9]+)\\s+\\[shape=[\"<](.+)[\">]\\s+label=[\"<](.+)[\">]\\];?");

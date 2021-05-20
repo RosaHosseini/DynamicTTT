@@ -30,6 +30,13 @@ public class DFADiscriminatorNode<I> extends DiscriminatorNode<I, Boolean> {
         this.solidChild = new EmptyDTLeaf<>(this);
     }
 
+    public DFADiscriminatorNode(DFADiscriminatorNode<I> parent, Word<I> discriminator, boolean isFinal) {
+        super(parent, discriminator, isFinal);
+        this.dashedChild = new EmptyDTLeaf<>(this);
+        this.solidChild = new EmptyDTLeaf<>(this);
+    }
+
+
     public DFADiscriminatorNode(
             DFADiscriminatorNode<I> parent,
             Word<I> discriminator,
@@ -39,10 +46,6 @@ public class DFADiscriminatorNode<I> extends DiscriminatorNode<I, Boolean> {
         super(parent, discriminator, isFinal);
         this.dashedChild = dashedChild;
         this.solidChild = solidChild;
-    }
-
-    public DFADiscriminatorNode(DFADiscriminatorNode<I> parent, Word<I> discriminator, boolean isFinal) {
-        super(parent, discriminator, isFinal);
     }
 
 

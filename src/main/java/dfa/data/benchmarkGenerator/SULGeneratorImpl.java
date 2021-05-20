@@ -206,12 +206,12 @@ class SULGeneratorRandom extends SULGenerator {
 
 class Main {
     public static void main(String[] args) {
-//        new SULGeneratorRandom().generate();
-//        new SULGeneratorAddState().generate();
-//        new SULGeneratorAddAlphabet().generate();
-//        new SULGeneratorChangeTail().generate();
-//        new SULGeneratorRemoveAlphabet().generate();
-//        new SULGeneratorRemoveState().generate();
-        new TestGenerator().generate();
+        new SULGeneratorRandom().generate();
+        new SULGeneratorAddState().generate();
+        new SULGeneratorAddAlphabet().generate();
+        new SULGeneratorChangeTail().generate();
+        new SULGeneratorRemoveAlphabet().generate();
+        new SULGeneratorRemoveState().generate();
+//        new TestGenerator().generate();
     }
 }

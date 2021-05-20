@@ -1,10 +1,9 @@
 package dfa.dynamicTTT.discriminationTree;
 
-import dfa.TTT.discriminiationTree.*;
-import generic.TTT.discriminationTree.DTLeaf;
-import generic.TTT.discriminationTree.DiscriminationNode;
-import generic.TTT.discriminationTree.DiscriminatorNode;
-import generic.TTT.discriminationTree.EmptyDTLeaf;
+import dfa.TTT.discriminiationTree.DFADiscriminationTree;
+import dfa.TTT.discriminiationTree.DFADiscriminatorNode;
+import generic.TTT.discriminationTree.*;
+import generic.dynamicTTT.discriminationTree.DynamicDiscriminationTree;
 import generic.modelLearning.MembershipCounter;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
@@ -13,25 +12,31 @@ import net.automatalib.words.WordBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DFADynamicDiscriminationTree<I> extends DFADiscriminationTree<I> {
+public class DFADynamicDiscriminationTree<I> extends DynamicDiscriminationTree<I, Boolean> {
+
     private final Alphabet<I> alphabet;
 
-    public DFADynamicDiscriminationTree(MembershipCounter<I, Boolean> membershipCounter, Alphabet<I> alphabet) {
+    public DFADynamicDiscriminationTree(MembershipCounter<I, Boolean> membershipCounter, Alphabet<I> alphabet
+    ) {
         super(membershipCounter);
         this.alphabet = alphabet;
     }
 
-    /***
-     * Initialize this discrimination Tree by removing all leaves of @param outdatedDiscriminationTree.
-     */
-    public void initialDiscriminationTree(DFADiscriminationTree<I> outdatedDiscriminationTree) throws Exception {
-        ((DFADiscriminatorNode<I>) root).solidChild = copy(
-                (DFADiscriminatorNode<I>) root,
-                ((DFADiscriminatorNode<I>) outdatedDiscriminationTree.root).solidChild
+    protected DFADiscriminationTree<I> createBaseDiscriminationTree(
+            MembershipCounter<I, Boolean> membershipCounter
+    ) {
+        return new DFADiscriminationTree<>(membershipCounter);
+    }
+
+    @Override
+    public void initialDiscriminationTree(DiscriminationTreeInterface<I, Boolean> outdatedDiscriminationTree) throws Exception {
+        ((DFADiscriminatorNode<I>) DT.root).solidChild = copy(
+                (DFADiscriminatorNode<I>) DT.root,
+                ((DFADiscriminatorNode<I>) outdatedDiscriminationTree.getRoot()).solidChild
         );
-        ((DFADiscriminatorNode<I>) root).dashedChild = copy(
-                (DFADiscriminatorNode<I>) root,
-                ((DFADiscriminatorNode<I>) outdatedDiscriminationTree.root).dashedChild
+        ((DFADiscriminatorNode<I>) DT.root).dashedChild = copy(
+                (DFADiscriminatorNode<I>) DT.root,
+                ((DFADiscriminatorNode<I>) outdatedDiscriminationTree.getRoot()).dashedChild
         );
     }
 
@@ -69,9 +74,9 @@ public class DFADynamicDiscriminationTree<I> extends DFADiscriminationTree<I> {
      * Remove any discriminator in this DT which does not discriminate any state!
      */
     public void removeRedundantDiscriminators() {
-        if ((((DFADiscriminatorNode<I>) root)).solidChild instanceof DFADiscriminatorNode)
-            removeRedundantDiscriminators((DiscriminatorNode<I, Boolean>) ((DFADiscriminatorNode<I>) root).solidChild);
-        if (((DFADiscriminatorNode<I>) root).dashedChild instanceof DFADiscriminatorNode)
-            removeRedundantDiscriminators((DFADiscriminatorNode<I>) ((DFADiscriminatorNode<I>) root).dashedChild);
+        if ((((DFADiscriminatorNode<I>) DT.root)).solidChild instanceof DFADiscriminatorNode)
+            removeRedundantDiscriminators((DiscriminatorNode<I, Boolean>) ((DFADiscriminatorNode<I>) DT.root).solidChild);
+        if (((DFADiscriminatorNode<I>) DT.root).dashedChild instanceof DFADiscriminatorNode)
+            removeRedundantDiscriminators((DFADiscriminatorNode<I>) ((DFADiscriminatorNode<I>) DT.root).dashedChild);
     }
 }
