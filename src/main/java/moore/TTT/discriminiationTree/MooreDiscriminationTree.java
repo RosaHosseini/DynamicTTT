@@ -174,7 +174,7 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
     private boolean placeNewLeafInFilledLeaf(Word<I> discriminator, DTLeaf<I, O> DTLeaf, TTTNode<I, O> state) {
         O oldDTLeafOutput = membershipCounter.membershipQuery(DTLeaf.state.sequenceAccess.concat(discriminator));
         O newDTLeafOutput = membershipCounter.membershipQuery(state.sequenceAccess.concat(discriminator));
-        if (newDTLeafOutput == oldDTLeafOutput)
+        if (newDTLeafOutput.equals(oldDTLeafOutput))
             return false;
 
         MooreDiscriminatorNode<I, O> discriminatorNode = new MooreDiscriminatorNode<>(

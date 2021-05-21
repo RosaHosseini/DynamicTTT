@@ -1,11 +1,12 @@
 import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
 
 def visualize_model_learning_result(df: pd.DataFrame, name):
-    basePath2 = "dfa.plots"
+    basePath2 = "dfa/plots"
     dirname = os.path.dirname(f"{basePath2}{name}_total.png")
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -24,10 +25,11 @@ def visualize_model_learning_result(df: pd.DataFrame, name):
     plt.close()
 
 
-# df = pd.read_csv("results/dfa.data/random_10s_20a.csv")
-# visualize_model_learning_result(df, "random_10s_20a")
+###########################
+#### DFA VISUALIZATION ####
+###########################
 
-basePath = "dfa.data"
+basePath = "dfa/data"
 
 methods = {
     "/DFA_random_learnLib",

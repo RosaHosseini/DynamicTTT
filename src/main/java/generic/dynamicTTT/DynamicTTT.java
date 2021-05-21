@@ -76,7 +76,6 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                 if (visualize)
                     System.out.println(ce);
                 tttLearner.refineHypothesis(ce);
-
                 tttLearner.stabilizeHypothesis();
                 tttLearner.finalizeHypothesis(); //todo fix this
 

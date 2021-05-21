@@ -7,7 +7,7 @@ public class ModelLearningInfo {
     public int NumAlphabet;
     public int distance;
     public String algorithm;
-    public int id;
+    public String id;
     public long duration;
 
 
@@ -18,7 +18,7 @@ public class ModelLearningInfo {
             int numAlphabet,
             int distance,
             String algorithm,
-            int id,
+            String id,
             long duration
     ) {
         this.MQCount = MQCount;

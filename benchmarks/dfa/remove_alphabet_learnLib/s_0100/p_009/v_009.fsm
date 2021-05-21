@@ -1,0 +1,8 @@
+0 -- 1 / false -> 1
+1 -- 2 / false -> 2
+2 -- 3 / true -> 3
+3 -- 4 / true -> 4
+4 -- 5 / false -> 5
+5 -- 6 / true -> 6
+6 -- 7 / false -> 7
+7 -- 1 / false -> 1

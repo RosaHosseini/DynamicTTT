@@ -8,6 +8,8 @@ import generic.modelLearning.ModelLearner;
 import generic.modelLearning.Teacher;
 import net.automatalib.automata.MutableDeterministic;
 import net.automatalib.commons.util.Triple;
+import net.automatalib.visualization.DefaultVisualizationHelper;
+import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
@@ -110,7 +112,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
             O output_ua_v = teacher.membershipQuery(access_ua.concat(v));
             O output_u_a_v = teacher.membershipQuery(access_u.append(a).concat(v));
 
-            if (output_u_a_v != output_ua_v) {
+            if (!output_u_a_v.equals(output_ua_v)) {
                 decomposition = Triple.of(u, a, v);
                 break;
             }
@@ -306,7 +308,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
 
             O TTTOutput = this.getDiscriminationTree().findAccessorToFather(child);
 
-            if (hypothesisOutput != TTTOutput)
+            if (!hypothesisOutput.equals(TTTOutput))
                 return query;
 
             child = parent;
@@ -379,5 +381,9 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
 
     public long getEQCounter() {
         return eqCounter;
+    }
+
+    private void visualize() {
+        Visualization.visualize(hypothesis, alphabet, new DefaultVisualizationHelper<>());
     }
 }

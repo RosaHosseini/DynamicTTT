@@ -31,7 +31,7 @@ public class TTTExampleDFA {
         ResultWriter writer = new ResultWriter();
         List<ModelLearningInfo> results;
 
-        String basePath = "results/dfa.data";
+        String basePath = "results/dfa/data";
         String[] methods = {
                 "/DFA_random_learnLib",
                 "/DFA_change_tail_learnLib",
@@ -121,7 +121,7 @@ public class TTTExampleDFA {
         System.out.println("-------------------------------------------------");
 
 
-        DFATeacher<String> teacher3 = new DFATeacher<>(dfa2, EQMethod.W,true);
+        DFATeacher<String> teacher3 = new DFATeacher<>(dfa2, EQMethod.W, true);
         DFATTT<String> ttt2 = new DFATTT<>(teacher3, dfa2.getInputAlphabet());
         DFA<?, String> hypothesis3 = ttt2.learn();
         if (hypothesis3 == null)
@@ -148,9 +148,9 @@ public class TTTExampleDFA {
                     String path = BASE_BENCHMARK_PATH + method + state + p + "/v_000.dot";
                     File f = new File(path);
                     System.out.println("dfa/TTT" + path);
-                    CompactDFA<String> dfa = new DFASULReader().parseDFAFromDot(f);
+                    CompactDFA<String> dfa = new DFASULReader().parseModelFromDot(f);
 
-                    DFATTT<String> tttLearner = new DFATTT<>(new DFATeacher<>(dfa, eqOption,true), dfa.getInputAlphabet());
+                    DFATTT<String> tttLearner = new DFATTT<>(new DFATeacher<>(dfa, eqOption, true), dfa.getInputAlphabet());
                     DFA<?, String> hypothesis = tttLearner.learn();
                     if (hypothesis == null)
                         throw new Exception("what");
@@ -162,8 +162,8 @@ public class TTTExampleDFA {
                     path = BASE_BENCHMARK_PATH + method + state + p + "/v_" + String.format("%03d", j) + ".dot";
                     f = new File(path);
                     System.out.println("Dynamic dfa.TTT" + path);
-                    dfa = new DFASULReader().parseDFAFromDot(f);
-                    DFATeacher<String> teacher = new DFATeacher<>(dfa, eqOption,true);
+                    dfa = new DFASULReader().parseModelFromDot(f);
+                    DFATeacher<String> teacher = new DFATeacher<>(dfa, eqOption, true);
                     teacher.mqOracle.getCount();
                     if (visualize)
                         Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
@@ -184,26 +184,28 @@ public class TTTExampleDFA {
                     long dEQ = dynamicTTTLearner.getEQCounter();
                     System.out.println(dEQ + ", " + dMQ);
                     results.add(new ModelLearningInfo(
-                            dMQ, dEQ, stateNum, DFAConstants.ALPHABET_SIZE, j, "dfa/dynamicTTT", id, end-start)
+                            dMQ, dEQ, stateNum, DFAConstants.ALPHABET_SIZE, j,
+                            "dfa/dynamicTTT", String.format("%d", id), end - start)
                     );
 
 
                     //dfa.TTT
                     System.out.println("TTT2       " + path);
-                    dfa = new DFASULReader().parseDFAFromDot(f);
-                    teacher = new DFATeacher<>(dfa, eqOption,true);
+                    dfa = new DFASULReader().parseModelFromDot(f);
+                    teacher = new DFATeacher<>(dfa, eqOption, true);
                     teacher.mqOracle.getCount();
                     start = getCurrentTimestamp();
                     DFATTT<String> tttLearner2 = new DFATTT<>(teacher, dfa.getInputAlphabet());
                     DFA<?, String> hyp = tttLearner2.learn();
-                    end= getCurrentTimestamp();
+                    end = getCurrentTimestamp();
                     if (hyp == null)
                         throw new Exception("what");
                     long MQ = teacher.getMQCount();
                     long EQ = tttLearner2.getEQCounter();
                     System.out.println(EQ + ", " + MQ);
                     results.add(new ModelLearningInfo(
-                            MQ, EQ, stateNum, DFAConstants.ALPHABET_SIZE, j, "dfa/TTT", id, end-start)
+                            MQ, EQ, stateNum, DFAConstants.ALPHABET_SIZE, j,
+                            "dfa/TTT",  String.format("%d", id), end - start)
                     );
 //                    //dfa.TTT learnlib
 //                    path = BASE_BENCHMARK_PATH + method + state + p + "/v_00" + j + ".dot";
@@ -230,7 +232,7 @@ public class TTTExampleDFA {
         return results;
     }
 
-    private static long getCurrentTimestamp(){
+    private static long getCurrentTimestamp() {
         return System.currentTimeMillis();
     }
 

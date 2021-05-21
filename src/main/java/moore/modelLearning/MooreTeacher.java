@@ -1,5 +1,7 @@
 package moore.modelLearning;
 
+import de.learnlib.algorithms.ttt.mealy.TTTHypothesisMealy;
+import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.DefaultQuery;
@@ -7,6 +9,7 @@ import de.learnlib.filter.cache.mealy.MealyCacheOracle;
 import de.learnlib.filter.statistic.oracle.CounterOracle;
 import de.learnlib.oracle.equivalence.*;
 import de.learnlib.oracle.membership.SimulatorOracle;
+import de.learnlib.util.mealy.MealyUtil;
 import generic.modelLearning.EQMethod;
 import generic.modelLearning.Teacher;
 import net.automatalib.automata.transducers.MooreMachine;
@@ -27,6 +30,7 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
 
     public MooreTeacher(CompactMoore<I, O> model, EQMethod eqOption, boolean withMemory) {
         super(model, withMemory);
+
         //////////////////////////////////
         // Setup objects related to MQs	//
         //////////////////////////////////
@@ -41,7 +45,7 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
         // Setup objects related to MQs	//
         //////////////////////////////////
         MembershipOracle<I, Word<O>> eOracle = new SimulatorOracle<>(model);
-//        MealyCacheOracle<I, O> eqCacheOracle = MealyCacheOracle.createDAGCacheOracle(model.getInputAlphabet(), eOracle);
+        MealyCacheOracle<I, O> eqCacheOracle = MealyCacheOracle.createDAGCacheOracle(model.getInputAlphabet(), eOracle);
         CounterOracle<I, Word<O>> eqCounter = new CounterOracle<>(eOracle, "EQ");
         mooreEqOracle = buildEqOracle(new Random(System.currentTimeMillis()), eqOption, eqCounter);
     }
@@ -56,13 +60,13 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
             case RAND_WORDS:
                 return new RandomWordsEQOracle<>(eqSUL, 0, 10, 40000);
             case WP:
-                return new WpMethodEQOracle<>(eqSUL, 2);
+                return new WpMethodEQOracle<>(eqSUL, 3);
             case W_RAND:
                 return new RandomWMethodEQOracle<>(eqSUL, 0, 4, 40000, rnd_seed, 1);
             case WP_RAND:
                 return new RandomWpMethodEQOracle<>(eqSUL, 0, 4, 40000, rnd_seed, 1);
             default:
-                return new WMethodEQOracle<>(eqSUL, 2);
+                return new WMethodEQOracle<>(eqSUL, 3);
         }
     }
 
@@ -91,7 +95,17 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
         if (eq == null) {
             return null;
         }
-        return eq.getInput();
+        return findSmallestMismatch(eq, hypothesis);
+    }
+
+    private Word<I> findSmallestMismatch(
+            DefaultQuery<I, Word<O>> eq,
+            MutableMooreMachine<Integer, I, Integer, O> hypothesis
+    ) {
+        Word<O> real = eq.getOutput();
+        Word<O> hyp = hypothesis.computeOutput(eq.getInput());
+        Word<O> longestCommonPrefix = hyp.longestCommonPrefix(real);
+        return eq.getInput().prefix(longestCommonPrefix.size());
     }
 
     public long getMQCount() {
