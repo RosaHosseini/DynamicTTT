@@ -23,10 +23,7 @@ import java.util.List;
 import static dfa.data.utils.DFAConstants.BASE_BENCHMARK_PATH;
 
 
-public class TTTExampleDFA {
-    public TTTExampleDFA() {
-    }
-
+public class Main {
     public static void main(String[] args) throws Exception {
         ResultWriter writer = new ResultWriter();
         List<ModelLearningInfo> results;

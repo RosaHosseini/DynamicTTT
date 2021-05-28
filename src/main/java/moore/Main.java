@@ -24,10 +24,7 @@ import java.util.List;
 import static moore.data.MooreConstants.*;
 
 
-public class TTTExampleMoore {
-
-    public TTTExampleMoore() {
-    }
+public class Main {
 
     public static void main(String[] args) throws Exception {
 
