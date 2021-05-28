@@ -1,0 +1,84 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyMethodParametersInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="14">
+            <item index="0" class="java.lang.String" itemvalue="rsa" />
+            <item index="1" class="java.lang.String" itemvalue="environs" />
+            <item index="2" class="java.lang.String" itemvalue="firebase-admin" />
+            <item index="3" class="java.lang.String" itemvalue="state-machine" />
+            <item index="4" class="java.lang.String" itemvalue="tilemapbase" />
+            <item index="5" class="java.lang.String" itemvalue="PyYAML" />
+            <item index="6" class="java.lang.String" itemvalue="more-itertools" />
+            <item index="7" class="java.lang.String" itemvalue="pre-commit" />
+            <item index="8" class="java.lang.String" itemvalue="psycopg2-binary" />
+            <item index="9" class="java.lang.String" itemvalue="awscli" />
+            <item index="10" class="java.lang.String" itemvalue="pyasn1" />
+            <item index="11" class="java.lang.String" itemvalue="colorama" />
+            <item index="12" class="java.lang.String" itemvalue="docutils" />
+            <item index="13" class="java.lang.String" itemvalue="postgis" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E501" />
+          <option value="E101" />
+          <option value="W191" />
+          <option value="E712" />
+          <option value="E731" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N806" />
+          <option value="N803" />
+          <option value="N802" />
+          <option value="N813" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredNames">
+        <list>
+          <option value="id" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PySingleQuotedDocstringInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="object.predict" />
+          <option value="builtins.abs.ABCMeta" />
+          <option value="scraper.requests_html" />
+          <option value="bond.models.Trade.*" />
+          <option value="bond.models.Instrument.objects" />
+          <option value="bond.models.Offer.objects" />
+          <option value="bond.models.MarketActivity.objects" />
+          <option value="bond.models.InstrumentInfo.objects" />
+          <option value="bond.models.Demand.objects" />
+          <option value="bond.models.InstrumentEffect.objects" />
+          <option value="typing.Hashable.__getitem__" />
+          <option value="Bourse.bond.models.Instrument.objects" />
+          <option value="Bourse.bond.models.Trade.objects" />
+          <option value="Bourse.bond.models.Demand.objects" />
+          <option value="Bourse.bond.models.Offer.*" />
+          <option value="Bourse.bond.models.MarketActivity.objects" />
+          <option value="Bourse.bond.models.InstrumentDetail.objects" />
+          <option value="bool.cumsum" />
+          <option value="Bourse.bond.models.Coupon.objects" />
+          <option value="Bourse.bond.models.Instrument.DoesNotExist" />
+          <option value="django_tables2" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

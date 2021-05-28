@@ -1,0 +1,34 @@
+digraph g {
+
+    __start0 [label="" shape="none"]
+    __start0 -> _s0_Empty
+
+    _s0_Empty [label="{ _s0_Empty | Empty }" shape="record" style="rounded"]
+    _s1_Alert2.10ConnectionClosed [label="{ _s1_Alert2.10ConnectionClosed | Alert2.10ConnectionClosed }" shape="record" style="rounded"]
+    _s1_ConnectionClosed [label="{ _s1_ConnectionClosed | ConnectionClosed }" shape="record" style="rounded"]
+
+    _s0_Empty -> _s0_Empty  [label="ApplicationDataEmpty"]
+    _s0_Empty -> _s1_Alert2.10ConnectionClosed  [label="ApplicationData"]
+    _s0_Empty -> _s1_Alert2.10ConnectionClosed  [label="ChangeCipherSpec"]
+    _s0_Empty -> _s1_Alert2.10ConnectionClosed  [label="EmptyCertificate"]
+    _s0_Empty -> _s1_Alert2.10ConnectionClosed  [label="Finished"]
+    _s0_Empty -> _s1_Alert2.10ConnectionClosed  [label="ServerCertificate"]
+    _s0_Empty -> _s1_Alert2.10ConnectionClosed  [label="ServerHelloDone"]
+    _s0_Empty -> _s1_ConnectionClosed  [label="ServerHelloRSA"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="ApplicationData"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="ApplicationDataEmpty"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="ChangeCipherSpec"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="EmptyCertificate"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="Finished"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="ServerCertificate"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="ServerHelloDone"]
+    _s1_Alert2.10ConnectionClosed -> _s1_ConnectionClosed  [label="ServerHelloRSA"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="ApplicationData"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="ApplicationDataEmpty"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="ChangeCipherSpec"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="EmptyCertificate"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="Finished"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="ServerCertificate"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="ServerHelloDone"]
+    _s1_ConnectionClosed -> _s1_ConnectionClosed  [label="ServerHelloRSA"]
+}

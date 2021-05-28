@@ -6,7 +6,7 @@ import seaborn as sns
 
 
 def visualize_model_learning_result(df: pd.DataFrame, name):
-    basePath2 = "plots"
+    basePath2 = "dfa/plots"
     dirname = os.path.dirname(f"{basePath2}{name}_total.png")
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -25,27 +25,33 @@ def visualize_model_learning_result(df: pd.DataFrame, name):
     plt.close()
 
 
-# df = pd.read_csv("results/data/random_10s_20a.csv")
-# visualize_model_learning_result(df, "random_10s_20a")
+###########################
+#### DFA VISUALIZATION ####
+###########################
 
-basePath = "data"
 
-methods = {
-    "/DFA_random_learnLib",
-    "/DFA_change_tail_learnLib",
-    "/DFA_remove_alphabet_learnLib",
-    "/DFA_add_alphabet_learnLib",
-    "/DFA_add_state_learnLib"
-}
+def visualize_dfa_results():
 
-eqMethod = "/WP"
+    basePath = "dfa/data"
 
-for method in methods:
-    df = pd.read_csv(basePath + eqMethod + method + "/0005s_5a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0005s_5a")
+    methods = {
+        "/DFA_random_learnLib",
+        "/DFA_change_tail_learnLib",
+        "/DFA_remove_alphabet_learnLib",
+        "/DFA_add_alphabet_learnLib",
+        "/DFA_add_state_learnLib"
+    }
 
-    df = pd.read_csv(basePath + eqMethod + method + "/0010s_20a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0010s_20a")
+    eqMethod = "/WP"
 
-    df = pd.read_csv(basePath + eqMethod + method + "/0050s_20a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0050s_20a")
+    for method in methods:
+        df = pd.read_csv(basePath + eqMethod + method + "/0005s_5a.csv")
+        visualize_model_learning_result(df, eqMethod + method + "/0005s_5a")
+
+        df = pd.read_csv(basePath + eqMethod + method + "/0010s_20a.csv")
+        visualize_model_learning_result(df, eqMethod + method + "/0010s_20a")
+
+        df = pd.read_csv(basePath + eqMethod + method + "/0050s_20a.csv")
+        visualize_model_learning_result(df, eqMethod + method + "/0050s_20a")
+
+visualize_dfa_results()
