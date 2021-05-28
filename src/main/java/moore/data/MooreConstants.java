@@ -3,74 +3,64 @@ package moore.data;
 public class MooreConstants {
     public static final String BASE_BENCHMARK_PATH = "./benchmarks/moore";
 
-    public static final String[] TCP_CLIENT = {
-            "/TCP/TCP_FreeBSD_Client.dot",
-            "/TCP/TCP_Linux_Client.dot",
-            "/TCP/TCP_Windows8_Client.dot",
-    };
-
-    public static final String[] TCP_SERVER = {
-            "/TCP/TCP_FreeBSD_Server.dot",
-            "/TCP/TCP_Linux_Server.dot",
-            "/TCP/TCP_Windows8_Server.dot",
-    };
-
-    public static final String[] MQTT_INVALID = {
-            "/MQTT/hbmqtt/invalid.dot",
-            "/MQTT/emqtt/invalid.dot",
-            "/MQTT/mosquitto/invalid.dot",
-            "/MQTT/VerneMQ/invalid.dot",
-            "/MQTT/ActiveMQ/invalid.dot",
-    };
-
-
-    public static final String[] MQTT_NONE_CLEAN = {
-            "/MQTT/hbmqtt/none_clean.dot",
-            "/MQTT/emqtt/none_clean.dot",
-            "/MQTT/mosquitto/none_clean.dot",
-            "/MQTT/VerneMQ/none_clean.dot",
-            "/MQTT/ActiveMQ/none_clean.dot",
-    };
-
-    public static final String[] MQTT_SIMPLE = {
-            "/MQTT/hbmqtt/simple.dot",
-            "/MQTT/emqtt/simple.dot",
-            "/MQTT/mosquitto/simple.dot",
-            "/MQTT/VerneMQ/simple.dot",
-            "/MQTT/ActiveMQ/simple.dot",
-    };
-
-
-    public static final String[] MQTT_SINGLE_CLIENT = {
-            "/MQTT/hbmqtt/single_client.dot",
-            "/MQTT/emqtt/single_client.dot",
-            "/MQTT/mosquitto/single_client.dot",
-            "/MQTT/VerneMQ/single_client.dot",
-            "/MQTT/ActiveMQ/single_client.dot"
-    };
-
-
-    public static final String[] MQTT_TWO_CLIENT_WILL_RETAIN = {
-            "/MQTT/hbmqtt/two_client_will_retain.dot",
-            "/MQTT/emqtt/two_client_will_retain.dot",
-            "/MQTT/mosquitto/two_client_will_retain.dot",
-            "/MQTT/VerneMQ/two_client_will_retain.dot",
-            "/MQTT/ActiveMQ/two_client_will_retain.dot"
-    };
-
-
     public static final String[] OPEN_SSL_CLIENT = {
+            "/Nordsec16/client_097e.dot",
+            "/Nordsec16/client_098f.dot",
+            "/Nordsec16/client_098j.dot",
+            "/Nordsec16/client_098l.dot",
+            "/Nordsec16/client_098m.dot",
+            "/Nordsec16/client_098za.dot",
+            "/Nordsec16/client_100m.dot",
+            "/Nordsec16/client_101.dot",
+            "/Nordsec16/client_101h.dot",
+            "/Nordsec16/client_102.dot",
+            "/Nordsec16/client_110-pre1.dot"
+    };
+
+    public static final String[] PREV_OPEN_SSL_CLIENT = {
             "/Nordsec16/client_097.dot",
             "/Nordsec16/client_097e.dot",
             "/Nordsec16/client_098f.dot",
             "/Nordsec16/client_098j.dot",
             "/Nordsec16/client_098l.dot",
             "/Nordsec16/client_098m.dot",
-//            "/Nordsec16/client_098za.dot",
-//            "/Nordsec16/client_100m.dot",
+            "/Nordsec16/client_098m.dot",
+            "/Nordsec16/client_098m.dot",
             "/Nordsec16/client_101.dot",
             "/Nordsec16/client_101h.dot",
             "/Nordsec16/client_102.dot",
-            "/Nordsec16/client_110-pre1.dot"
     };
+
+    public static final String[] OPEN_SSL_SERVER = {
+            "/Nordsec16/server_097c.dot",
+            "/Nordsec16/server_097e.dot",
+            "/Nordsec16/server_098l.dot",
+            "/Nordsec16/server_098m.dot",
+            "/Nordsec16/server_098s.dot",
+            "/Nordsec16/server_098u.dot",
+            "/Nordsec16/server_098za.dot",
+            "/Nordsec16/server_100.dot",
+            "/Nordsec16/server_101.dot",
+            "/Nordsec16/server_101k.dot",
+            "/Nordsec16/server_102.dot",
+            "/Nordsec16/server_110pre1.dot",
+    };
+
+
+    public static final String[] PREV_OPEN_SSL_SERVER = {
+            "/Nordsec16/server_097.dot",
+            "/Nordsec16/server_097c.dot",
+            "/Nordsec16/server_097e.dot",
+            "/Nordsec16/server_098l.dot",
+            "/Nordsec16/server_098m.dot",
+            "/Nordsec16/server_098s.dot",
+            "/Nordsec16/server_098u.dot",
+            "/Nordsec16/server_098m.dot",
+            "/Nordsec16/server_100.dot",
+            "/Nordsec16/server_101.dot",
+            "/Nordsec16/server_101k.dot",
+            "/Nordsec16/server_102.dot",
+    };
+
+
 }

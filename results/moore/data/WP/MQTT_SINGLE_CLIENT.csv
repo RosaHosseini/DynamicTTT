@@ -1,9 +1,0 @@
-algorithm,id,num_states,num_alphabet,eq_count,mq_count,distance,duration
-mealy/dynamicTTT,/MQTT/emqtt/single_client.dot,39,10,17,2220,-1,1133
-mealy/TTT,/MQTT/emqtt/single_client.dot,39,10,30,1256,-1,1015
-mealy/dynamicTTT,/MQTT/mosquitto/single_client.dot,38,10,9,2070,-1,1005
-mealy/TTT,/MQTT/mosquitto/single_client.dot,38,10,29,1191,-1,986
-mealy/dynamicTTT,/MQTT/VerneMQ/single_client.dot,37,10,20,2197,-1,919
-mealy/TTT,/MQTT/VerneMQ/single_client.dot,37,10,28,1159,-1,962
-mealy/dynamicTTT,/MQTT/ActiveMQ/single_client.dot,30,10,8,1800,-1,689
-mealy/TTT,/MQTT/ActiveMQ/single_client.dot,30,10,21,877,-1,791

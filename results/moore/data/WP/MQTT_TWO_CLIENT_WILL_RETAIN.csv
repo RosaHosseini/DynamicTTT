@@ -1,9 +1,0 @@
-algorithm,id,num_states,num_alphabet,eq_count,mq_count,distance,duration
-mealy/dynamicTTT,/MQTT/emqtt/two_client_will_retain.dot,57,10,12,2335,-1,841
-mealy/TTT,/MQTT/emqtt/two_client_will_retain.dot,57,10,33,1297,-1,869
-mealy/dynamicTTT,/MQTT/mosquitto/two_client_will_retain.dot,54,10,3,2078,-1,746
-mealy/TTT,/MQTT/mosquitto/two_client_will_retain.dot,54,10,30,1266,-1,736
-mealy/dynamicTTT,/MQTT/VerneMQ/two_client_will_retain.dot,52,10,7,2160,-1,673
-mealy/TTT,/MQTT/VerneMQ/two_client_will_retain.dot,52,10,33,1272,-1,703
-mealy/dynamicTTT,/MQTT/ActiveMQ/two_client_will_retain.dot,57,10,12,2335,-1,836
-mealy/TTT,/MQTT/ActiveMQ/two_client_will_retain.dot,57,10,33,1297,-1,966

@@ -29,24 +29,29 @@ def visualize_model_learning_result(df: pd.DataFrame, name):
 #### DFA VISUALIZATION ####
 ###########################
 
-basePath = "dfa/data"
 
-methods = {
-    "/DFA_random_learnLib",
-    "/DFA_change_tail_learnLib",
-    "/DFA_remove_alphabet_learnLib",
-    "/DFA_add_alphabet_learnLib",
-    "/DFA_add_state_learnLib"
-}
+def visualize_dfa_results():
 
-eqMethod = "/WP"
+    basePath = "dfa/data"
 
-for method in methods:
-    df = pd.read_csv(basePath + eqMethod + method + "/0005s_5a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0005s_5a")
+    methods = {
+        "/DFA_random_learnLib",
+        "/DFA_change_tail_learnLib",
+        "/DFA_remove_alphabet_learnLib",
+        "/DFA_add_alphabet_learnLib",
+        "/DFA_add_state_learnLib"
+    }
 
-    df = pd.read_csv(basePath + eqMethod + method + "/0010s_20a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0010s_20a")
+    eqMethod = "/WP"
 
-    df = pd.read_csv(basePath + eqMethod + method + "/0050s_20a.csv")
-    visualize_model_learning_result(df, eqMethod + method + "/0050s_20a")
+    for method in methods:
+        df = pd.read_csv(basePath + eqMethod + method + "/0005s_5a.csv")
+        visualize_model_learning_result(df, eqMethod + method + "/0005s_5a")
+
+        df = pd.read_csv(basePath + eqMethod + method + "/0010s_20a.csv")
+        visualize_model_learning_result(df, eqMethod + method + "/0010s_20a")
+
+        df = pd.read_csv(basePath + eqMethod + method + "/0050s_20a.csv")
+        visualize_model_learning_result(df, eqMethod + method + "/0050s_20a")
+
+visualize_dfa_results()

@@ -30,19 +30,18 @@ public class TTTExampleMoore {
     }
 
     public static void main(String[] args) throws Exception {
-//        testToyModel();
 
-
-//        testOpenSSLClient();
-//
         ResultWriter writer = new ResultWriter();
         List<ModelLearningInfo> results;
 
         String basePath = "./results/moore/data";
-        EQMethod eqMethod = EQMethod.W;
+        EQMethod eqMethod = EQMethod.WP;
 
-        results = test2(OPEN_SSL_CLIENT, eqMethod, false);
+        results = test2(OPEN_SSL_CLIENT, PREV_OPEN_SSL_CLIENT, eqMethod, false);
         writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_CLIENT.csv");
+
+        results = test2(OPEN_SSL_SERVER, PREV_OPEN_SSL_SERVER, eqMethod, false);
+        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_SERVER.csv");
 
     }
 
@@ -134,7 +133,7 @@ public class TTTExampleMoore {
     }
 
 
-    public static List<ModelLearningInfo> test2(String[] benchmarks, EQMethod eqOption, Boolean visualize) {
+    public static List<ModelLearningInfo> test2(String[] benchmarks, String[] outdated_benchmarks, EQMethod eqOption, Boolean visualize) {
         List<ModelLearningInfo> results = new ArrayList<>();
         long start, end;
         String path;
@@ -142,10 +141,10 @@ public class TTTExampleMoore {
         Pair<CompactMoore<String, String>, Alphabet<String>> updateMoorePair, outdatedMoorePair;
         long MQ, EQ;
         MooreTeacher<String, String> teacher, outdatedTeacher;
-        for (int i = 1; i < benchmarks.length; i++) {
+        for (int i = 0; i < benchmarks.length; i++) {
             try {
 //                outdated mealy TTT
-                path = BASE_BENCHMARK_PATH + benchmarks[0];
+                path = BASE_BENCHMARK_PATH + outdated_benchmarks[i];
                 f = new File(path);
                 System.out.println("Base TTT mealy for " + path);
                 outdatedMoorePair = new MooreSULReader().parseModelFromDot(f);
@@ -198,7 +197,7 @@ public class TTTExampleMoore {
                 System.out.println(dEQ + ", " + dMQ);
                 results.add(new ModelLearningInfo(
                         dMQ, dEQ, updateMoorePair.getFirst().getStates().size(), DFAConstants.ALPHABET_SIZE,
-                        -1, "mealy/dynamicTTT", benchmarks[i], end - start)
+                        1, "mealy/dynamicTTT", benchmarks[i], end - start)
                 );
 
 
@@ -221,7 +220,7 @@ public class TTTExampleMoore {
                 System.out.println(EQ + ", " + MQ);
                 results.add(new ModelLearningInfo(
                         MQ, EQ, updateMoorePair.getFirst().getStates().size(), DFAConstants.ALPHABET_SIZE,
-                        -1, "mealy/TTT", benchmarks[i], end - start)
+                        1, "mealy/TTT", benchmarks[i], end - start)
                 );
             } catch (FileNotFoundException ignored) {
             } catch (Exception e) {

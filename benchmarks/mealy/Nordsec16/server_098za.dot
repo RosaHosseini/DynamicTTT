@@ -73,6 +73,15 @@ __start0 [label="" shape="none"];
 	s8 -> s2 [label="Finished / Alert2.20ConnectionClosed"];
 	s8 -> s2 [label="ApplicationData / Alert2.20ConnectionClosed"];
 	s8 -> s2 [label="ApplicationDataEmpty / Alert2.20ConnectionClosed"];
+    s0 -> s0 [label="loop / Empty"];
+    s1 -> s1 [label="loop / Empty"];
+    s2 -> s2 [label="loop / Empty"];
+    s3 -> s3 [label="loop / Empty"];
+    s4 -> s4 [label="loop / Empty"];
+    s5 -> s5 [label="loop / Empty"];
+    s6 -> s6 [label="loop / Empty"];
+    s7 -> s7 [label="loop / Empty"];
+    s8 -> s8 [label="loop / Empty"];
 
 __start0 -> s0;
 }
