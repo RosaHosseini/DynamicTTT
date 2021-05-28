@@ -19,13 +19,13 @@ import java.util.regex.Pattern;
 public class MooreSULReader implements SULReader<Pair<CompactMoore<String, String>, Alphabet<String>>> {
 
     public Pair<CompactMoore<String, String>, Alphabet<String>> parseModelFromDot(File file) throws Exception {
-        Pattern statePattern = Pattern.compile("\\s*([a-zA-Z0-9,_()+]+)" +
-                "\\s+\\[label=[\"<]\\{\\s([a-zA-Z0-9,_()+]+)\\s\\|\\s([a-zA-Z0-9,_()+]+)\\s\\}[\">]" +
+        Pattern statePattern = Pattern.compile("\\s*([a-zA-Z0-9,_()+.]+)" +
+                "\\s+\\[label=[\"<]\\{\\s([a-zA-Z0-9,_()+.]+)\\s\\|\\s([a-zA-Z0-9,_()+.]+)\\s\\}[\">]" +
                 "\\s+shape=[\"<](.+)[\">]" +
                 "\\s+style=[\"<](.+)[\">]\\]"
         );
-        Pattern relationPattern = Pattern.compile("\\s*([a-zA-Z0-9,_()+]+)\\s+->\\s+([a-zA-Z0-9,_()+]+)" +
-                "\\s*\\[label=[\"<]([a-zA-Z0-9,_()+]+)[\">]\\]"
+        Pattern relationPattern = Pattern.compile("\\s*([a-zA-Z0-9,_()+.]+)\\s+->\\s+([a-zA-Z0-9,_()+.]+)" +
+                "\\s*\\[label=[\"<]([a-zA-Z0-9,_()+.]+)[\">]\\]"
         );
 
         BufferedReader reader = new BufferedReader(new FileReader(file));

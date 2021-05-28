@@ -1,0 +1,24 @@
+digraph g {
+__start0 [label="" shape="none"];
+
+	s0 [shape="circle" label="0"];
+	s1 [shape="circle" label="1"];
+	s0 -> s1 [label="ServerHelloRSA / ConnectionClosed"];
+	s0 -> s1 [label="ServerCertificate / Alert2.10ConnectionClosed"];
+	s0 -> s1 [label="EmptyCertificate / Alert2.10ConnectionClosed"];
+	s0 -> s1 [label="ServerHelloDone / Alert2.10ConnectionClosed"];
+	s0 -> s1 [label="ChangeCipherSpec / Alert2.10ConnectionClosed"];
+	s0 -> s1 [label="Finished / Alert2.10ConnectionClosed"];
+	s0 -> s1 [label="ApplicationData / Alert2.10ConnectionClosed"];
+	s0 -> s0 [label="ApplicationDataEmpty / Empty"];
+	s1 -> s1 [label="ServerHelloRSA / ConnectionClosed"];
+	s1 -> s1 [label="ServerCertificate / ConnectionClosed"];
+	s1 -> s1 [label="EmptyCertificate / ConnectionClosed"];
+	s1 -> s1 [label="ServerHelloDone / ConnectionClosed"];
+	s1 -> s1 [label="ChangeCipherSpec / ConnectionClosed"];
+	s1 -> s1 [label="Finished / ConnectionClosed"];
+	s1 -> s1 [label="ApplicationData / ConnectionClosed"];
+	s1 -> s1 [label="ApplicationDataEmpty / ConnectionClosed"];
+
+__start0 -> s0;
+}

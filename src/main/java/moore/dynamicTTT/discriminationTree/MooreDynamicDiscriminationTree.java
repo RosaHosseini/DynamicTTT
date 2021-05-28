@@ -73,8 +73,9 @@ public class MooreDynamicDiscriminationTree<I, O> extends DynamicDiscriminationT
                 );
             }
             return copiedDTNode;
+        } else{
+            return new EmptyDTLeaf<>(parent);
         }
-        throw new Exception("Your discrimination node is not discriminator nor leaf!");
     }
 
     /***

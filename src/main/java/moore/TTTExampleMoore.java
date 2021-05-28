@@ -26,34 +26,23 @@ import static moore.data.MooreConstants.*;
 
 public class TTTExampleMoore {
 
+    public TTTExampleMoore() {
+    }
+
     public static void main(String[] args) throws Exception {
-        testToyModel();
-//        ResultWriter writer = new ResultWriter();
-//        List<ModelLearningInfo> results;
+//        testToyModel();
+
+
+//        testOpenSSLClient();
 //
-//        String basePath = "./results/moore/data";
-//        EQMethod eqMethod = EQMethod.W;
-//
-//        results = test2(TCP_CLIENT, eqMethod, false);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/TCP_CLIENT.csv");
-////
-//        results = test2(TCP_SERVER, eqMethod, false);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/TCP_SERVER.csv");
-//
-//        results = test2(MQTT_INVALID, eqMethod, false);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/MQTT_INVALID.csv");
-//
-//        results = test2(MQTT_NONE_CLEAN, eqMethod, false);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/MQTT_NONE_CLEAN.csv");
-//
-//        results = test2(MQTT_SIMPLE, eqMethod, true);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/MQTT_SIMPLE.csv");
-//
-//        results = test2(MQTT_SINGLE_CLIENT, eqMethod, false);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/MQTT_SINGLE_CLIENT.csv");
-//
-//        results = test2(MQTT_TWO_CLIENT_WILL_RETAIN, eqMethod, false);
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/MQTT_TWO_CLIENT_WILL_RETAIN.csv");
+        ResultWriter writer = new ResultWriter();
+        List<ModelLearningInfo> results;
+
+        String basePath = "./results/moore/data";
+        EQMethod eqMethod = EQMethod.W;
+
+        results = test2(OPEN_SSL_CLIENT, eqMethod, false);
+        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_CLIENT.csv");
 
     }
 
@@ -148,15 +137,20 @@ public class TTTExampleMoore {
     public static List<ModelLearningInfo> test2(String[] benchmarks, EQMethod eqOption, Boolean visualize) {
         List<ModelLearningInfo> results = new ArrayList<>();
         long start, end;
+        String path;
+        File f;
+        Pair<CompactMoore<String, String>, Alphabet<String>> updateMoorePair, outdatedMoorePair;
+        long MQ, EQ;
+        MooreTeacher<String, String> teacher, outdatedTeacher;
         for (int i = 1; i < benchmarks.length; i++) {
             try {
-                //outdated mealy TTT
-                String path = BASE_BENCHMARK_PATH + benchmarks[0];
-                File f = new File(path);
+//                outdated mealy TTT
+                path = BASE_BENCHMARK_PATH + benchmarks[0];
+                f = new File(path);
                 System.out.println("Base TTT mealy for " + path);
-                Pair<CompactMoore<String, String>, Alphabet<String>> outdatedMoorePair = new MooreSULReader().parseModelFromDot(f);
+                outdatedMoorePair = new MooreSULReader().parseModelFromDot(f);
 //                Visualization.visualize(outdatedMoorePair.getFirst(), outdatedMoorePair.getFirst().getInputAlphabet(), new DefaultVisualizationHelper<>());
-                MooreTeacher<String, String> outdatedTeacher = new MooreTeacher<>(outdatedMoorePair.getFirst(), eqOption, true);
+                outdatedTeacher = new MooreTeacher<>(outdatedMoorePair.getFirst(), eqOption, true);
                 MooreTTT<String, String> outdatedTTTLearner = new MooreTTT<>(
                         outdatedTeacher,
                         outdatedMoorePair.getFirst().getInputAlphabet(),
@@ -171,18 +165,18 @@ public class TTTExampleMoore {
                             outdatedMoorePair.getFirst().getInputAlphabet(),
                             new DefaultVisualizationHelper<>()
                     );
-                long MQ = outdatedTeacher.getMQCount();
-                long EQ = outdatedTTTLearner.getEQCounter();
+                MQ = outdatedTeacher.getMQCount();
+                EQ = outdatedTTTLearner.getEQCounter();
                 System.out.println(EQ + ", " + MQ);
 
                 //Dynamic mealy TTT
                 path = BASE_BENCHMARK_PATH + benchmarks[i];
                 f = new File(path);
                 System.out.println("Dynamic TTT mealy for " + path);
-                Pair<CompactMoore<String, String>, Alphabet<String>> updateMoorePair = new MooreSULReader().parseModelFromDot(f);
+                updateMoorePair = new MooreSULReader().parseModelFromDot(f);
 //                Visualization.visualize(updateMoorePair.getFirst(), updateMoorePair.getFirst().getInputAlphabet(), new DefaultVisualizationHelper<>());
 
-                MooreTeacher<String, String> teacher = new MooreTeacher<>(updateMoorePair.getFirst(), eqOption, true);
+                teacher = new MooreTeacher<>(updateMoorePair.getFirst(), eqOption, true);
                 if (visualize)
                     Visualization.visualize(updateMoorePair.getFirst(), updateMoorePair.getFirst().getInputAlphabet(), new DefaultVisualizationHelper<>());
                 MooreDynamicTTT<String, String> dynamicTTTLearner = new MooreDynamicTTT<>(
@@ -236,6 +230,27 @@ public class TTTExampleMoore {
             }
         }
         return results;
+    }
+
+    public static void testOpenSSLClient() throws Exception {
+        boolean withMemory = true;
+
+        Pair<CompactMoore<String, String>, Alphabet<String>> moore = new MooreSULReader().
+                parseModelFromDot(new File("./benchmarks/moore/Nordsec16/client_098f.dot"));
+        Visualization.visualize(
+                moore.getFirst(),
+                moore.getFirst().getInputAlphabet(),
+                new DefaultVisualizationHelper<>()
+        );
+        MooreTeacher<String, String> teacher = new MooreTeacher<>(moore.getFirst(), EQMethod.WP, withMemory);
+        MooreTTT<String, String> ttt = new MooreTTT<>(teacher, moore.getFirst().getInputAlphabet(), moore.getSecond());
+        MutableMooreMachine<Integer, String, Integer, String> hypothesis = ttt.learn();
+        if (hypothesis == null)
+            throw new Exception("error in open ssl client 0.9.7 mealy TTT");
+        Visualization.visualize(hypothesis, moore.getFirst().getInputAlphabet(), new DefaultVisualizationHelper<>());
+
+        System.out.println("MQ and EQ:");
+        System.out.println(teacher.getMQCount() + ", " + ttt.getEQCounter());
     }
 
 

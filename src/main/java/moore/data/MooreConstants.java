@@ -57,4 +57,20 @@ public class MooreConstants {
             "/MQTT/VerneMQ/two_client_will_retain.dot",
             "/MQTT/ActiveMQ/two_client_will_retain.dot"
     };
+
+
+    public static final String[] OPEN_SSL_CLIENT = {
+            "/Nordsec16/client_097.dot",
+            "/Nordsec16/client_097e.dot",
+            "/Nordsec16/client_098f.dot",
+            "/Nordsec16/client_098j.dot",
+            "/Nordsec16/client_098l.dot",
+            "/Nordsec16/client_098m.dot",
+//            "/Nordsec16/client_098za.dot",
+//            "/Nordsec16/client_100m.dot",
+            "/Nordsec16/client_101.dot",
+            "/Nordsec16/client_101h.dot",
+            "/Nordsec16/client_102.dot",
+            "/Nordsec16/client_110-pre1.dot"
+    };
 }
