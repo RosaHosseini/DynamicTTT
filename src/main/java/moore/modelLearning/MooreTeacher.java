@@ -95,10 +95,10 @@ public class MooreTeacher<I, O> extends Teacher<I, O, MutableMooreMachine<Intege
         if (eq == null) {
             return null;
         }
-        return findSmallestMismatch(eq, hypothesis);
+        return findShortestMismatch(eq, hypothesis);
     }
 
-    private Word<I> findSmallestMismatch(
+    private Word<I> findShortestMismatch(
             DefaultQuery<I, Word<O>> eq,
             MutableMooreMachine<Integer, I, Integer, O> hypothesis
     ) {
