@@ -30,12 +30,12 @@ public class Main {
 
         String basePath = "results/dfa/data";
         String[] methods = {
-//                "/random_learnLib",
-//                "/change_tail_learnLib",
-//                "/remove_alphabet_learnLib",
-//                "/add_alphabet_learnLib",
+                "/random_learnLib",
+                "/change_tail_learnLib",
+                "/remove_alphabet_learnLib",
+                "/add_alphabet_learnLib",
                 "/remove_state_learnLib",
-//                "/add_state_learnLib",
+                "/add_state_learnLib",
 //                "/test"
         };
         EQMethod eqMethod = EQMethod.WP;

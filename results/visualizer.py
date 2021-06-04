@@ -35,11 +35,11 @@ def visualize_dfa_results():
     basePath = "dfa/data"
 
     methods = {
-        # "/random_learnLib",
-        # "/change_tail_learnLib",
-        # "/remove_alphabet_learnLib",
-        # "/add_alphabet_learnLib",
-        # "/add_state_learnLib",
+        "/random_learnLib",
+        "/change_tail_learnLib",
+        "/remove_alphabet_learnLib",
+        "/add_alphabet_learnLib",
+        "/add_state_learnLib",
         "/remove_state_learnLib"
     }
 
