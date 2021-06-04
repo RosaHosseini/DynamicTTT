@@ -62,5 +62,21 @@ public class MooreConstants {
             "/Nordsec16/server_102.dot",
     };
 
+    public static final String[] PREV2_OPEN_SSL_SERVER = {
+            "/Nordsec16/server_097.dot",
+            "/Nordsec16/server_097.dot",
+            "/Nordsec16/server_097c.dot",
+            "/Nordsec16/server_097e.dot",
+            "/Nordsec16/server_098l.dot",
+            "/Nordsec16/server_098m.dot",
+            "/Nordsec16/server_098s.dot",
+            "/Nordsec16/server_098u.dot",
+            "/Nordsec16/server_098m.dot",
+            "/Nordsec16/server_100.dot",
+            "/Nordsec16/server_101.dot",
+            "/Nordsec16/server_101k.dot",
+            "/Nordsec16/server_102.dot",
+    };
+
 
 }

@@ -111,7 +111,7 @@ public class DFAModelEditor {
         for (FastDFAState qi : qSet) {
             // create qi, if missing
             if (!statesMap.containsKey(qi.getId())) {
-                statesMap.put(qi.getId(), temp_dfa.addState());
+                statesMap.put(qi.getId(), temp_dfa.addState(qi.isAccepting()));
             }
             // get qi
             FastDFAState state_qi = statesMap.get(qi.getId());
@@ -129,7 +129,7 @@ public class DFAModelEditor {
                 assert qj != null;
                 // if qj is a new state in temp_dfa we put in the set
                 if (!statesMap.containsKey(qj.getId()))
-                    statesMap.put(qj.getId(), temp_dfa.addState());
+                    statesMap.put(qj.getId(), temp_dfa.addState(qj.isAccepting()));
 
                 // set the qj as the in-accessor of qi in temp_dfa
                 FastDFAState state_qj = statesMap.get(qj.getId());

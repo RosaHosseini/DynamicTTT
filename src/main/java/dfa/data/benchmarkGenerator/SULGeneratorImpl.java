@@ -17,7 +17,7 @@ class SULGeneratorAddState extends SULGenerator {
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
                 DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_add_state_learnLib");
+                DFAConstants.BASE_BENCHMARK_PATH + "/add_state_learnLib");
     }
 
     @Override
@@ -35,7 +35,7 @@ class SULGeneratorRemoveState extends SULGenerator {
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
                 DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_remove_state_learnLib"
+                DFAConstants.BASE_BENCHMARK_PATH + "/remove_state_learnLib"
         );
     }
 
@@ -56,7 +56,7 @@ class SULGeneratorAddAlphabet extends SULGenerator {
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
                 DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_add_alphabet_learnLib"
+                DFAConstants.BASE_BENCHMARK_PATH + "/add_alphabet_learnLib"
         );
     }
 
@@ -75,7 +75,7 @@ class SULGeneratorRemoveAlphabet extends SULGenerator {
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
                 DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_remove_alphabet_learnLib"
+                DFAConstants.BASE_BENCHMARK_PATH + "/remove_alphabet_learnLib"
         );
     }
 
@@ -97,7 +97,7 @@ class SULGeneratorChangeTail extends SULGenerator {
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
                 DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_change_tail_learnLib"
+                DFAConstants.BASE_BENCHMARK_PATH + "/change_tail_learnLib"
         );
     }
 
@@ -164,7 +164,7 @@ class SULGeneratorRandom extends SULGenerator {
                 DFAConstants.ALPHABET_SIZE,
                 DFAConstants.NUM_DFA,
                 DFAConstants.NUM_VERSION,
-                DFAConstants.BASE_BENCHMARK_PATH + "/DFA_random_learnLib"
+                DFAConstants.BASE_BENCHMARK_PATH + "/random_learnLib"
         );
     }
 

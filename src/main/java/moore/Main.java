@@ -32,13 +32,13 @@ public class Main {
         List<ModelLearningInfo> results;
 
         String basePath = "./results/moore/data";
-        EQMethod eqMethod = EQMethod.WP;
+        EQMethod eqMethod = EQMethod.W;
 
         results = test2(OPEN_SSL_CLIENT, PREV_OPEN_SSL_CLIENT, eqMethod, false);
-        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_CLIENT.csv");
+        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_CLIENT2.csv");
 
         results = test2(OPEN_SSL_SERVER, PREV_OPEN_SSL_SERVER, eqMethod, false);
-        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_SERVER.csv");
+        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_SERVER2.csv");
 
     }
 
