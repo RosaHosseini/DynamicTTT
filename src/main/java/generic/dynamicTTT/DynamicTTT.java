@@ -73,11 +73,12 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
 //                    tttLearner.finalizeHypothesis();
                     return tttLearner.getHypothesis();
                 }
+                System.out.println("counter example dynamic:" + ce.toString());
                 if (visualize)
                     System.out.println(ce);
                 tttLearner.refineHypothesis(ce);
                 tttLearner.stabilizeHypothesis();
-                tttLearner.finalizeHypothesis(); //todo fix this
+//                tttLearner.finalizeHypothesis(); //todo fix this
 
                 if (visualize)
                     Visualization.visualize(hypothesis, this.alphabet, new DefaultVisualizationHelper<>());

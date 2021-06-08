@@ -104,7 +104,7 @@ public class Converter<I, O> {
 
     public static void main(String[] args) throws Exception {
         CompactMealy<String, String> mealy =
-                new MealySULReader().parseModelFromDot(new File("./benchmarks/mealy/Nordsec16/client_097.dot"));
+                new MealySULReader().parseModelFromDot(new File("Mealy/Nordsec16/client_097.dot"));
         CompactMoore<String, String> moore = new Converter<String,String>().convertMealyToMoore(mealy);
         Visualization.visualize(
                 moore,

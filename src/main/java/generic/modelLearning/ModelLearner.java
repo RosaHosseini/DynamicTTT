@@ -8,5 +8,5 @@ public abstract class ModelLearner<I, O, A> {
         this.teacher = teacher;
     }
 
-    abstract public A learn();
+    abstract public A learn() throws Exception;
 }

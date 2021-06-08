@@ -50,24 +50,21 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
     }
 
     @Override
-    public A learn() {
+    public A learn() throws Exception {
         initializeHypothesis();
         while (true) {
-            try {
-                @Nullable Word<I> ce = teacher.equivalenceQuery(hypothesis, alphabet);
-                eqCounter++;
-                if (ce == null) {
+
+            @Nullable Word<I> ce = teacher.equivalenceQuery(hypothesis, alphabet);
+            eqCounter++;
+            if (ce == null) {
 //                    finalizeHypothesis();
-                    return this.hypothesis;
-                }
-                System.out.println("counter example " + ce);
-                refineHypothesis(ce);
-                stabilizeHypothesis();
-                finalizeHypothesis(); //todo fix this
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                return this.hypothesis;
             }
+            System.out.println("counter example " + ce);
+            refineHypothesis(ce);
+            stabilizeHypothesis();
+//            finalizeHypothesis(); //todo fix this
+
         }
     }
 

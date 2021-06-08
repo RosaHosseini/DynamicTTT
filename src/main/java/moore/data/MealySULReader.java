@@ -110,6 +110,6 @@ public class MealySULReader implements SULReader<CompactMealy<String, String>> {
     }
 
     public static void main(String[] args) throws Exception {
-        new MealySULReader().parseModelFromDot(new File("./benchmarks/mealy/Nordsec16/client_097.dot"));
+        new MealySULReader().parseModelFromDot(new File("Mealy/Nordsec16/client_097.dot"));
     }
 }

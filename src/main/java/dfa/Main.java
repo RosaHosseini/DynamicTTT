@@ -30,26 +30,30 @@ public class Main {
 
         String basePath = "results/dfa/data";
         String[] methods = {
-                "/random_learnLib",
-                "/change_tail_learnLib",
-                "/remove_alphabet_learnLib",
-                "/add_alphabet_learnLib",
-                "/remove_state_learnLib",
-                "/add_state_learnLib",
-//                "/test"
+//                "/random_learnLib",
+//                "/change_tail_learnLib",
+//                "/remove_alphabet_learnLib",
+//                "/add_alphabet_learnLib",
+//                "/remove_state_learnLib",
+//                "/add_state_learnLib",
         };
+        String method = "/test";
         EQMethod eqMethod = EQMethod.WP;
-        for (String method : methods) {
+//        for (String method : methods) {
 
-            results = test2(method, 5, eqMethod, false);
-            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_5a.csv");
-
-            results = test2(method, 10, eqMethod, false);
-            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_20a.csv");
-
-            results = test2(method, 50, eqMethod, false);
-            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_20a.csv");
-        }
+//            results = test2(method, 5, eqMethod, false);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_10a.csv");
+//
+//            results = test2(method, 10, eqMethod, false);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_10a.csv");
+//
+//            results = test2(method, 50, eqMethod, false);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_10a.csv");
+//            results = test2(method, 100, eqMethod, false);
+//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0100s_10a.csv");
+        results = test2(method, 5, eqMethod, false);
+        writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_02a.csv");
+//        }
     }
 
 
@@ -131,6 +135,7 @@ public class Main {
         List<ModelLearningInfo> results = new ArrayList<>();
 
         long start, end;
+        String p, state;
 
         int id = 0;
 
@@ -139,84 +144,79 @@ public class Main {
             for (int j = 1; j < 10; j++) {
                 try {
                     id++;
-                    String state = "/s_" + String.format("%04d", stateNum);
-                    String p = "/p_" + String.format("%03d", i);
-                    //dfa.TTT
-                    String path = BASE_BENCHMARK_PATH + method + state + p + "/v_000.dot";
-                    File f = new File(path);
-                    System.out.println("dfa/TTT" + path);
-                    CompactDFA<String> dfa = new DFASULReader().parseModelFromDot(f);
+                    state = "/s_" + String.format("%04d", stateNum);
+                    p = "/p_" + String.format("%03d", i);
 
-                    DFATTT<String> tttLearner = new DFATTT<>(new DFATeacher<>(dfa, eqOption, true), dfa.getInputAlphabet());
+
+                    //dfa.TTT for outdated SUL
+                    String outdatedPath = BASE_BENCHMARK_PATH + method + state + p + "/v_000.dot";
+                    File f = new File(outdatedPath);
+                    System.out.println("dfa/TTT" + outdatedPath);
+                    CompactDFA<String> outdatedDFA = new DFASULReader().parseModelFromDot(f);
+
+                    DFATTT<String> tttLearner = new DFATTT<>(
+                            new DFATeacher<>(outdatedDFA, eqOption, true),
+                            outdatedDFA.getInputAlphabet()
+                    );
                     DFA<?, String> hypothesis = tttLearner.learn();
-                    if (hypothesis == null)
-                        throw new Exception("what");
                     if (visualize)
-                        Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
+                        Visualization.visualize(
+                                outdatedDFA,
+                                outdatedDFA.getInputAlphabet(),
+                                new DefaultVisualizationHelper<>()
+                        );
 
 
                     //Dynamic dfa.TTT
-                    path = BASE_BENCHMARK_PATH + method + state + p + "/v_" + String.format("%03d", j) + ".dot";
-                    f = new File(path);
-                    System.out.println("Dynamic dfa.TTT" + path);
-                    dfa = new DFASULReader().parseModelFromDot(f);
-                    DFATeacher<String> teacher = new DFATeacher<>(dfa, eqOption, true);
+                    String updatedPath = BASE_BENCHMARK_PATH + method + state + p + "/v_" + String.format("%03d", j) + ".dot";
+                    f = new File(updatedPath);
+                    System.out.println("Dynamic dfa.TTT" + updatedPath);
+                    CompactDFA<String> updatedDFA = new DFASULReader().parseModelFromDot(f);
+                    DFATeacher<String> teacher = new DFATeacher<>(updatedDFA, eqOption, true);
                     teacher.mqOracle.getCount();
                     if (visualize)
-                        Visualization.visualize(dfa, dfa.getInputAlphabet(), new DefaultVisualizationHelper<>());
+                        Visualization.visualize(
+                                updatedDFA,
+                                updatedDFA.getInputAlphabet(),
+                                new DefaultVisualizationHelper<>()
+                        );
                     DFADynamicTTT<String> dynamicTTTLearner = new DFADynamicTTT<>(
                             teacher,
                             tttLearner.getSpanningTree(),
                             tttLearner.getDiscriminationTree(),
-                            dfa.getInputAlphabet(),
-                            new CompactDFA<>(dfa.getInputAlphabet()),
+                            updatedDFA.getInputAlphabet(),
+                            new CompactDFA<>(updatedDFA.getInputAlphabet()),
                             visualize
                     );
                     start = getCurrentTimestamp();
                     DFA<?, String> updatedHypothesis = dynamicTTTLearner.learn();
                     end = getCurrentTimestamp();
-                    if (updatedHypothesis == null)
-                        throw new Exception("what");
                     long dMQ = teacher.getMQCount();
                     long dEQ = dynamicTTTLearner.getEQCounter();
                     System.out.println(dEQ + ", " + dMQ);
                     results.add(new ModelLearningInfo(
-                            dMQ, dEQ, stateNum, DFAConstants.ALPHABET_SIZE, j,
-                            "dfa/dynamicTTT", String.format("%d", id), end - start)
+                            dMQ, dEQ, updatedHypothesis.getStates().size(), DFAConstants.ALPHABET_SIZE, j,
+                            "dfa/dynamicTTT", String.format("s%d_%d", stateNum, id), end - start)
                     );
 
 
-                    //dfa.TTT
-                    System.out.println("TTT2       " + path);
-                    dfa = new DFASULReader().parseModelFromDot(f);
-                    teacher = new DFATeacher<>(dfa, eqOption, true);
+                    //dfa.TTT for updated sul
+                    System.out.println("TTT2       " + updatedPath);
+                    updatedDFA = new DFASULReader().parseModelFromDot(f);
+                    teacher = new DFATeacher<>(updatedDFA, eqOption, true);
                     teacher.mqOracle.getCount();
                     start = getCurrentTimestamp();
-                    DFATTT<String> tttLearner2 = new DFATTT<>(teacher, dfa.getInputAlphabet());
+                    DFATTT<String> tttLearner2 = new DFATTT<>(teacher, updatedDFA.getInputAlphabet());
                     DFA<?, String> hyp = tttLearner2.learn();
                     end = getCurrentTimestamp();
-                    if (hyp == null)
-                        throw new Exception("what");
                     long MQ = teacher.getMQCount();
                     long EQ = tttLearner2.getEQCounter();
                     System.out.println(EQ + ", " + MQ);
                     results.add(new ModelLearningInfo(
-                            MQ, EQ, stateNum, DFAConstants.ALPHABET_SIZE, j,
-                            "dfa/TTT",  String.format("%d", id), end - start)
+                            MQ, EQ, hyp.getStates().size(), DFAConstants.ALPHABET_SIZE, j,
+                            "dfa/TTT", String.format("s%d_%d", stateNum, id), end - start)
                     );
-//                    //dfa.TTT learnlib
-//                    path = BASE_BENCHMARK_PATH + method + state + p + "/v_00" + j + ".dot";
-//                    f = new File(path);
-//                    System.out.println("learnlib   " + path);
-//                    dfa = new SULReader().parseDFAFromDot(f);
-//                    teacher = new Teacher<>(dfa, eqOption);
-//                    teacher.mqCounter.getCount();
-//                    LearnLibTTT<String> tttLearner3 = new LearnLibTTT<>(teacher, dfa.getInputAlphabet());
-//                    DFA<?, String> hyp2 = tttLearner3.learn();
-//                    if (hyp2 == null)
-//                        throw new Exception("what");
-//                    System.out.println(teacher.getMQCount());
-//                    System.out.println("-------------------------------------------------");
+
                 } catch (FileNotFoundException e) {
                     continue out;
                 } catch (Exception e) {
