@@ -1,0 +1,3 @@
+algorithm,id,num_states,num_alphabet,eq_count,mq_count,distance,duration
+mealy/dynamicTTT,/Nordsec16/server_110pre1.dot,12,8,2,177,1,220
+mealy/TTT,/Nordsec16/server_110pre1.dot,12,8,6,149,1,182
