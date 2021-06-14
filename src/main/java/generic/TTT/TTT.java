@@ -25,7 +25,6 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
     private SpanningTree<I, O> spanningTree;
     private DiscriminationTreeInterface<I, O> discriminationTree;
     private DiscriminatorTrie<I, O> discriminatorTrie;
-    private Deque<Word<I>> tempDiscriminators = new ArrayDeque<>();
     private long eqCounter = 0L;
 
 
@@ -63,7 +62,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
             System.out.println("counter example " + ce);
             refineHypothesis(ce);
             stabilizeHypothesis();
-//            finalizeHypothesis(); //todo fix this
+            finalizeHypothesis(); //todo fix this
 
         }
     }
@@ -128,9 +127,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
             return;
 
         result = discriminationTree.discriminate(v, newNode, oldNode);
-        if (result)
-            tempDiscriminators.addFirst(v);
-        else
+        if (!result)
             throw new Exception("can not place new discriminator " + v.toString() + ", in  the discrimination Tree");
         expandStateTransitions(newNode);
         updateAllTransitionsEndTo(oldNode.id);
@@ -325,7 +322,7 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
         for (Word<I> sequence : sequences) {
             DTLeaf<I, O> leaf = discriminationTree.sift(sequence);
             if (leaf instanceof EmptyDTLeaf) {
-                throw new Exception("sequence" + sequence + "is not valid in discrimination Tree!");
+                addState(sequence, (EmptyDTLeaf<I, O>) leaf);
             } else {
                 if (leaf.state.id == destId) {
                     continue;
@@ -348,8 +345,13 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
         Collection<Integer> states = hypothesis.getStates();
         for (int state : states) {
             for (I symbol : alphabet) {
-                if (hypothesis.getSuccessor(state, symbol) == stateId) {
-                    sequences.add(spanningTree.getState(state).sequenceAccess.append(symbol));
+                try {
+                    Integer successId = hypothesis.getSuccessor(state, symbol);
+                    if (successId != null)
+                        if (successId == stateId) {
+                            sequences.add(spanningTree.getState(state).sequenceAccess.append(symbol));
+                        }
+                } catch (NullPointerException ignored) {
                 }
             }
         }
