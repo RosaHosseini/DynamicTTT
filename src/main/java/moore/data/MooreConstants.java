@@ -61,7 +61,7 @@ public class MooreConstants {
 
     public static final Map<String, String> TCP_MAP = Stream.of(new String[][]{
             {"/BenchmarkTCP/TCP_FreeBSD_Server.dot", "/BenchmarkTCP/TCP_Windows8_Server.dot"},
-//            {"/BenchmarkTCP/TCP_Linux_Server.dot","/BenchmarkTCP/TCP_FreeBSD_Server.dot"}
+            {"/BenchmarkTCP/TCP_Linux_Server.dot","/BenchmarkTCP/TCP_FreeBSD_Server.dot"}
     }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
 

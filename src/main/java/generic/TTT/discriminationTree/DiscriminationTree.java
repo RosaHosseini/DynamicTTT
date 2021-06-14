@@ -83,8 +83,6 @@ public abstract class DiscriminationTree<I, O> implements DiscriminationTreeInte
      */
     public DTLeaf<I, O> findLeaf(Word<I> word) throws Exception {
         @Nullable DTLeaf<I, O> result = root.find(word);
-        if (result == null)
-            throw new Exception("the given word (" + word + ") is not valid in the discrimination Tree");
         return result;
     }
 

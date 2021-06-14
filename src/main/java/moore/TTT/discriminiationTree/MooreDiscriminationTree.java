@@ -27,6 +27,8 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
         DTLeaf<I, O> DTLeaf = sift(state.sequenceAccess);
 
         if (DTLeaf.parent.getDiscriminator().equals(discriminator)) {
+            if(DTLeaf.state.sequenceAccess == state.sequenceAccess)
+                return true;
             return discriminate(state, DTLeaf);
         }
         if (!(DTLeaf instanceof EmptyDTLeaf)) {

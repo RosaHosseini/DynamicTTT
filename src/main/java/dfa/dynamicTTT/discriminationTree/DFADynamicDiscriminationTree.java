@@ -86,6 +86,8 @@ public class DFADynamicDiscriminationTree<I> extends DynamicDiscriminationTree<I
     public void removeNode(TTTNode<I, Boolean> node) {
         try {
             DTLeaf<I, Boolean> leaf = findLeaf(node.sequenceAccess);
+            if(leaf == null)
+                throw new Exception("the given word (" + node.sequenceAccess + ") is not valid in the discrimination Tree");
             Boolean isDashed = findAccessorToFather(leaf);
             if (isDashed)
                 ((DFADiscriminatorNode<I>) (leaf.parent)).dashedChild = new EmptyDTLeaf<>(leaf.parent);

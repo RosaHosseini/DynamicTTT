@@ -289,6 +289,8 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
     @Nullable
     public Word<I> checkStabilization(TTTNode<I, O> tttNode) throws Exception {
         DTLeaf<I, O> DTNode = getDiscriminationTree().findLeaf(tttNode.sequenceAccess);
+        if (DTNode == null)
+            throw new Exception("the given word (" + tttNode.sequenceAccess + ") is not valid in the discrimination Tree");
         assert !(DTNode instanceof EmptyDTLeaf);
 
         DiscriminatorNode<I, O> parent = DTNode.parent;

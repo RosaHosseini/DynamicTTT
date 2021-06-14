@@ -131,7 +131,6 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         out:
         for (Iterator<TTTNode<I, O>> it = tempSpanningTree.getIterator(); it.hasNext(); ) {
             TTTNode<I, O> node = it.next();
-            boolean false_sequence = false;
             Deque<Pair<TTTNode<I, O>, TTTNode<I, O>>> queue = new ArrayDeque<>();
             if (node.sequenceAccess.size() == 0) { //initial node
                 spanningTree = new SpanningTree<>(node);
@@ -156,6 +155,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                     updateAllTransitionsEndTo(p.getSecond().id);
                 assert result;
             }
+            stabilizeHypothesis();
         }
     }
 
@@ -300,7 +300,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                         if (spanningNode != null)
                             sequences.add(spanningNode.sequenceAccess.append(symbol));
                     }
-                }catch (Exception ignored){
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -325,11 +325,11 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
             a = ce.getSymbol(i);
             v = ce.suffix(ce.size() - i - 1);
 
-            access_u_node = equivalenceStateMap.get(hypothesis.getState(u));
+            access_u_node = tempSpanningTree.getState(hypothesis.getState(u));
             assert access_u_node != null;
             access_u = access_u_node.sequenceAccess;
 
-            access_ua_node = equivalenceStateMap.get(hypothesis.getState(u.append(a)));
+            access_ua_node = tempSpanningTree.getState(hypothesis.getState(u.append(a)));
             assert access_ua_node != null;
             access_ua = access_ua_node.sequenceAccess;
 
@@ -349,12 +349,27 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
 
         TTTNode<I, O> oldNode = access_ua_node;
         Word<I> newStateSequence = access_u.append(a);
-        TTTNode<I, O> newNode = createState(newStateSequence, true);
-        tempSpanningTree.add(newNode);
-        equivalenceStateMap.put(newNode.sequenceAccess, newNode);
-        boolean result = discriminationTree.discriminate(v, newNode, oldNode);
-        if (!result)
-            throw new Exception("can not place new discriminator " + v.toString() + ", in  the discrimination Tree");
+
+        TTTNode<I, O> newNode = tempSpanningTree.getState(newStateSequence);
+        if (newNode == null){
+            if (discriminationTree.findLeaf(newStateSequence) == null) {
+                boolean result = discriminationTree.discriminate(v, newNode, oldNode);
+                if (!result)
+                    throw new Exception("can not place new discriminator " + v.toString() + ", in  the discrimination Tree");
+            }
+            else{
+                boolean debug=true;
+            }
+
+        }
+        else {
+            newNode = createState(newStateSequence, true);
+            tempSpanningTree.add(newNode);
+            equivalenceStateMap.put(newNode.sequenceAccess, newNode);
+            boolean result = discriminationTree.discriminate(v, newNode, oldNode);
+            if (!result)
+                throw new Exception("can not place new discriminator " + v.toString() + ", in  the discrimination Tree");
+        }
         expandStateTransitions(newNode);
         updateAllTransitionsEndTo(oldNode.id);
     }

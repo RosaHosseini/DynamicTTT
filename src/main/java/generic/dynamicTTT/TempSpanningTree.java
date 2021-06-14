@@ -18,21 +18,40 @@ public class TempSpanningTree<I, O> {
         removeList.add(node);
     }
 
-    public boolean contains(Word<I> prefix) {
+    public TTTNode<I, O> getState(Integer id) {
         for (TTTNode<I, O> node : nodesList) {
-            if (node.sequenceAccess.equals(prefix)) {
-                return !removeListContain(prefix);
+            if (node.id == id) {
+                if(removeListContain(node.sequenceAccess))
+                    return node;
+                else
+                    return null;
             }
         }
-        return false;
+        return null;
+    }
+
+    public TTTNode<I, O> getState(Word<I> accessSequence) {
+        for (TTTNode<I, O> node : nodesList) {
+            if (node.sequenceAccess == accessSequence) {
+                if(removeListContain(node.sequenceAccess))
+                    return node;
+                else
+                    return null;
+            }
+        }
+        return null;
+    }
+
+    public boolean contains(Word<I> prefix) {
+        return getState(prefix) == null;
     }
 
     private boolean removeListContain(Word<I> prefix) {
         for (TTTNode<I, O> node : removeList) {
             if (node.sequenceAccess.equals(prefix))
-                return true;
+                return false;
         }
-        return false;
+        return true;
     }
 
 
@@ -69,4 +88,5 @@ public class TempSpanningTree<I, O> {
     public void sort() {
         nodesList.sort(Comparator.comparingInt(o -> o.sequenceAccess.size()));
     }
+
 }
