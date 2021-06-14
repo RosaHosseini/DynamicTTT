@@ -2,9 +2,7 @@ package generic.dynamicTTT;
 
 import generic.TTT.TTT;
 import generic.TTT.TTTNode;
-import generic.TTT.discriminationTree.DTLeaf;
-import generic.TTT.discriminationTree.DiscriminationTreeInterface;
-import generic.TTT.discriminationTree.EmptyDTLeaf;
+import generic.TTT.discriminationTree.*;
 import generic.TTT.spanningTree.SpanningTree;
 import generic.dynamicTTT.discriminationTree.DynamicDiscriminationTree;
 import generic.dynamicTTT.spanningTree.OutdatedSpanningTreeContainer;
@@ -13,6 +11,7 @@ import generic.modelLearning.ModelLearner;
 import generic.modelLearning.Teacher;
 import net.automatalib.automata.MutableDeterministic;
 import net.automatalib.commons.util.Pair;
+import net.automatalib.commons.util.Triple;
 import net.automatalib.visualization.DefaultVisualizationHelper;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
@@ -26,7 +25,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         extends ModelLearner<I, O, A> implements MembershipCounter<I, O> {
 
     protected final DiscriminationTreeInterface<I, O> outdatedDiscriminationTree;
-    protected final List<TTTNode<I, O>> tempSpanningTree = new ArrayList<>();
+    protected final TempSpanningTree<I, O> tempSpanningTree = new TempSpanningTree<>();
     protected final HashMap<Word<I>, TTTNode<I, O>> equivalenceStateMap = new HashMap<>();
     protected final Alphabet<I> alphabet;
     protected final A hypothesis;
@@ -47,8 +46,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         this.alphabet = updatedAlphabet;
         this.hypothesis = hypothesis;
         this.outdatedDiscriminationTree = outdatedDiscriminationTree;
-//        this.discriminationTree = initialDynamicDiscriminationTree();
-        this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<>(outdatedSpanningTree, this.alphabet, this::tempSpanningTreeContain);
+        this.outdatedPrefixesContainer = new OutdatedSpanningTreeContainer<>(outdatedSpanningTree, this.alphabet, tempSpanningTree::contains);
         this.visualize = visulaize;
     }
 
@@ -57,6 +55,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
     public A learn() {
         try {
             reconstructHypothesis();
+            cleanDiscriminationTree();
             completeHypothesis();
             cleanDiscriminationTree();
             if (visualize)
@@ -82,11 +81,11 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
 
                 if (visualize)
                     Visualization.visualize(hypothesis, this.alphabet, new DefaultVisualizationHelper<>());
-
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            discriminationTree.draw();
+            spanningTree.draw();
             return null;
         }
 
@@ -104,7 +103,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         while (prefixIterator.hasNext()) {
 
             Word<I> prefix = prefixIterator.next();
-            if (tempSpanningTreeContain(prefix))
+            if (tempSpanningTree.contains(prefix))
                 continue;
             DTLeaf<I, O> pos = this.discriminationTree.sift(prefix);
             if (pos instanceof EmptyDTLeaf) { // add a new state!
@@ -113,6 +112,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                 tempSpanningTree.add(node);
                 this.discriminationTree.discriminate(node, pos);
                 outdatedPrefixesContainer.expandPrefix(node.sequenceAccess);
+
             } else { //update transitions
                 addToEquivalenceStateMap(prefix, pos.state);
                 int destStateId = pos.state.id;
@@ -126,9 +126,12 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
     }
 
     public void completeHypothesis() throws Exception {
-        tempSpanningTree.sort(Comparator.comparingInt(o -> o.sequenceAccess.size()));
+        tempSpanningTree.sort();
 
-        for (TTTNode<I, O> node : tempSpanningTree) {
+        out:
+        for (Iterator<TTTNode<I, O>> it = tempSpanningTree.getIterator(); it.hasNext(); ) {
+            TTTNode<I, O> node = it.next();
+            boolean false_sequence = false;
             Deque<Pair<TTTNode<I, O>, TTTNode<I, O>>> queue = new ArrayDeque<>();
             if (node.sequenceAccess.size() == 0) { //initial node
                 spanningTree = new SpanningTree<>(node);
@@ -136,11 +139,12 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
             }
             Pair<TTTNode<I, O>, TTTNode<I, O>> pair = Pair.of(node, null);
             while (true) {
+
                 queue.addFirst(pair);
                 TTTNode<I, O> currNode = pair.getFirst();
                 Word<I> sequence = currNode.sequenceAccess;
                 Word<I> prefix = currNode.sequenceAccess.prefix(sequence.size() - 1);
-                if (tempSpanningTreeContain(prefix))
+                if (tempSpanningTree.contains(prefix))
                     break;
                 pair = discriminateLongestPrefix(currNode);
             }
@@ -266,7 +270,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         for (Word<I> sequence : sequences) {
             DTLeaf<I, O> leaf = discriminationTree.sift(sequence);
             if (leaf instanceof EmptyDTLeaf) {
-                throw new Exception("sequence" + sequence + "is not valid in discrimination Tree!");
+                throw new Exception("sequence " + sequence + " is not valid in discrimination Tree!");
             } else {
                 if (leaf.state.id == destId) {
                     continue;
@@ -303,20 +307,102 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
         return sequences;
     }
 
+    public void refineHypothesis(Word<I> ce) throws Exception {
+
+        // decompose counter example -------------------------
+        // Triple<Word<I>, I, Word<I>> decomposition = decomposeCounterExample(eq);
+        Triple<Word<I>, I, Word<I>> decomposition = null;
+        Word<I> u;
+        I a = null;
+        Word<I> v = null;
+        Word<I> access_u = null;
+        Word<I> access_ua;
+        TTTNode<I, O> access_u_node;
+        TTTNode<I, O> access_ua_node = null;
+
+        for (int i = 0; i < ce.size(); i++) {
+            u = ce.prefix(i);
+            a = ce.getSymbol(i);
+            v = ce.suffix(ce.size() - i - 1);
+
+            access_u_node = equivalenceStateMap.get(hypothesis.getState(u));
+            assert access_u_node != null;
+            access_u = access_u_node.sequenceAccess;
+
+            access_ua_node = equivalenceStateMap.get(hypothesis.getState(u.append(a)));
+            assert access_ua_node != null;
+            access_ua = access_ua_node.sequenceAccess;
+
+            O output_ua_v = teacher.membershipQuery(access_ua.concat(v));
+            O output_u_a_v = teacher.membershipQuery(access_u.append(a).concat(v));
+
+            if (!output_u_a_v.equals(output_ua_v)) {
+                decomposition = Triple.of(u, a, v);
+                break;
+            }
+        }
+
+        if (decomposition == null) {
+            throw new Exception("can not find appropriate decomposition in counter example of hypothesis refinement");
+        }
+        //---------------------------------------------------
+
+        TTTNode<I, O> oldNode = access_ua_node;
+        Word<I> newStateSequence = access_u.append(a);
+        TTTNode<I, O> newNode = createState(newStateSequence, true);
+        tempSpanningTree.add(newNode);
+        equivalenceStateMap.put(newNode.sequenceAccess, newNode);
+        boolean result = discriminationTree.discriminate(v, newNode, oldNode);
+        if (!result)
+            throw new Exception("can not place new discriminator " + v.toString() + ", in  the discrimination Tree");
+        expandStateTransitions(newNode);
+        updateAllTransitionsEndTo(oldNode.id);
+    }
+
+    public void stabilizeHypothesis() throws Exception {
+        while (true) {
+            boolean isStable = true;
+            for (Iterator<TTTNode<I, O>> it = tempSpanningTree.getIterator(); it.hasNext(); ) {
+                TTTNode<I, O> tttNode = it.next();
+                @Nullable Word<I> ce = checkStabilization(tttNode);
+                if (ce != null) {
+                    refineHypothesis(ce);
+                    isStable = false;
+                    break;
+                }
+            }
+            if (isStable)
+                return;
+        }
+    }
+
+    @Nullable
+    public Word<I> checkStabilization(TTTNode<I, O> tttNode) throws Exception {
+        DTLeaf<I, O> DTNode = discriminationTree.findLeaf(tttNode.sequenceAccess);
+        assert !(DTNode instanceof EmptyDTLeaf);
+
+        DiscriminatorNode<I, O> parent = DTNode.parent;
+        DiscriminationNode<I, O> child = DTNode;
+
+        while (true) {
+            if (parent == null) //root node
+                return null;
+            Word<I> query = tttNode.sequenceAccess.concat(parent.getDiscriminator());
+            O hypothesisOutput = membershipQuery(query);
+
+            O TTTOutput = this.discriminationTree.findAccessorToFather(child);
+
+            if (!hypothesisOutput.equals(TTTOutput))
+                return query;
+
+            child = parent;
+            parent = parent.parent;
+        }
+    }
 
     private void addToEquivalenceStateMap(Word<I> sequence, TTTNode<I, O> node) {
         equivalenceStateMap.put(sequence, node);
     }
-
-
-    public boolean tempSpanningTreeContain(Word<I> prefix) {
-        for (TTTNode<I, O> node : tempSpanningTree) {
-            if (node.sequenceAccess.equals(prefix))
-                return true;
-        }
-        return false;
-    }
-
 
     public long getEQCounter() {
         return eqCounter;
