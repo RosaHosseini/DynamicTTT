@@ -4,8 +4,8 @@ import net.automatalib.words.Word;
 
 public class TTTNode<I, O> {
 
-    public final int id;
-    public final Word<I> sequenceAccess;
+    public int id;
+    public Word<I> sequenceAccess;
     public final O output;
 
 

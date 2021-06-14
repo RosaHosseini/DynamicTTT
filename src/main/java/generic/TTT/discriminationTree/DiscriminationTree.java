@@ -7,7 +7,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
 
-public abstract class DiscriminationTree<I, O> implements DiscriminationTreeInterface<I,O> {
+public abstract class DiscriminationTree<I, O> implements DiscriminationTreeInterface<I, O> {
     public final DiscriminatorNode<I, O> root;
     protected MembershipCounter<I, O> membershipCounter;
 
@@ -84,7 +84,7 @@ public abstract class DiscriminationTree<I, O> implements DiscriminationTreeInte
     public DTLeaf<I, O> findLeaf(Word<I> word) throws Exception {
         @Nullable DTLeaf<I, O> result = root.find(word);
         if (result == null)
-            throw new Exception("the given word is not valid in the discrimination Tree");
+            throw new Exception("the given word (" + word + ") is not valid in the discrimination Tree");
         return result;
     }
 
@@ -115,6 +115,13 @@ public abstract class DiscriminationTree<I, O> implements DiscriminationTreeInte
      */
     public abstract @Nullable O findAccessorToFather(DiscriminationNode<I, O> node);
 
-    public DiscriminatorNode<I, O> getRoot(){return this.root;}
+    public DiscriminatorNode<I, O> getRoot() {
+        return this.root;
+    }
 
+    public void draw() {
+        StringBuilder buffer = new StringBuilder();
+        root.print(buffer, "", "");
+        System.out.println(buffer.toString());
+    }
 }

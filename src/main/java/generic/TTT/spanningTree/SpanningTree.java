@@ -40,6 +40,12 @@ public class SpanningTree<I, O> {
         }
         return listOfNodes;
     }
+
+    public void draw(){
+        StringBuilder builder = new StringBuilder();
+        root.print(builder, "", "");
+        System.out.println(builder.toString());
+    }
 }
 
 

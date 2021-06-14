@@ -20,4 +20,7 @@ public class EmptyDTLeaf<I, O> extends DTLeaf<I, O> {
         return null;
     }
 
+    public void print(StringBuilder buffer, String prefix, String childrenPrefix) {
+    }
+
 }

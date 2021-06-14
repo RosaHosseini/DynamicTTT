@@ -2,9 +2,11 @@ package dfa.dynamicTTT.discriminationTree;
 
 import dfa.TTT.discriminiationTree.DFADiscriminationTree;
 import dfa.TTT.discriminiationTree.DFADiscriminatorNode;
+import generic.TTT.TTTNode;
 import generic.TTT.discriminationTree.*;
 import generic.dynamicTTT.discriminationTree.DynamicDiscriminationTree;
 import generic.modelLearning.MembershipCounter;
+import moore.TTT.discriminiationTree.MooreDiscriminatorNode;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
@@ -78,5 +80,18 @@ public class DFADynamicDiscriminationTree<I> extends DynamicDiscriminationTree<I
             removeRedundantDiscriminators((DiscriminatorNode<I, Boolean>) ((DFADiscriminatorNode<I>) DT.root).solidChild);
         if (((DFADiscriminatorNode<I>) DT.root).dashedChild instanceof DFADiscriminatorNode)
             removeRedundantDiscriminators((DFADiscriminatorNode<I>) ((DFADiscriminatorNode<I>) DT.root).dashedChild);
+    }
+
+    @Override
+    public void removeNode(TTTNode<I, Boolean> node) {
+        try {
+            DTLeaf<I, Boolean> leaf = findLeaf(node.sequenceAccess);
+            Boolean isDashed = findAccessorToFather(leaf);
+            if (isDashed)
+                ((DFADiscriminatorNode<I>) (leaf.parent)).dashedChild = new EmptyDTLeaf<>(leaf.parent);
+            else
+                ((DFADiscriminatorNode<I>) (leaf.parent)).solidChild = new EmptyDTLeaf<>(leaf.parent);
+        } catch (Exception ignored) {
+        }
     }
 }

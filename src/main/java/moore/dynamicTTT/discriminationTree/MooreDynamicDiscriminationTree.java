@@ -1,5 +1,6 @@
 package moore.dynamicTTT.discriminationTree;
 
+import generic.TTT.TTTNode;
 import generic.TTT.discriminationTree.*;
 import generic.dynamicTTT.discriminationTree.DynamicDiscriminationTree;
 import generic.modelLearning.MembershipCounter;
@@ -53,6 +54,16 @@ public class MooreDynamicDiscriminationTree<I, O> extends DynamicDiscriminationT
                 removeRedundantDiscriminators((MooreDiscriminatorNode<I, O>)child);
         }
     }
+
+    @Override
+    public void removeNode(TTTNode<I, O> node) {
+        try {
+            DTLeaf<I, O> leaf = findLeaf(node.sequenceAccess);
+            O success = findAccessorToFather(leaf);
+            ((MooreDiscriminatorNode<I,O>)(leaf.parent)).children.put(success, new EmptyDTLeaf<>(leaf.parent));
+        }catch (Exception ignored){ }
+    }
+
 
     /***
      * Copy all sub tree of a node if they are discriminator node!

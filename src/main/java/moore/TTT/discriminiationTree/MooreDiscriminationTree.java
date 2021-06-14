@@ -103,7 +103,7 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
     }
 
     @Override
-    public  @Nullable DiscriminationNode<I, O> findLCA
+    public @Nullable DiscriminationNode<I, O> findLCA
             (DiscriminationNode<I, O> node, Word<I> word1, Word<I> word2) {
         if (node instanceof EmptyDTLeaf)
             return null;
@@ -153,13 +153,18 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
             O key = findAccessorToFather(DTNode);
             if (key != null)
                 parent.children.put(key, fillNode);
+        } else if (fillChildren.size() == 0) {
+            EmptyDTLeaf<I, O> fillNode = new EmptyDTLeaf<>(parent);
+            O key = findAccessorToFather(DTNode);
+            if (key != null)
+                parent.children.put(key, fillNode);
         }
     }
 
     /***
      Find out a node in the discrimination Tree is connected to its father with which accessor in the output Alphabet
      */
-    public  @Nullable O findAccessorToFather(DiscriminationNode<I, O> node) {
+    public @Nullable O findAccessorToFather(DiscriminationNode<I, O> node) {
         MooreDiscriminatorNode<I, O> parent = (MooreDiscriminatorNode<I, O>) node.parent;
         for (O key : parent.children.keySet()) {
             DiscriminationNode<I, O> child = parent.children.get(key);
@@ -197,11 +202,12 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
     private DiscriminatorNode<I, O> reDiscriminate(Word<I> discriminator, DiscriminatorNode<I, O> root) {
         MooreDiscriminatorNode<I, O> newDiscriminatorNode = new MooreDiscriminatorNode<>(
                 root.parent, discriminator, this.outputAlphabet);
-
-        O accessor = findAccessorToFather(root);
-        if (accessor != null) {
-            MooreDiscriminatorNode<I, O> parent = (MooreDiscriminatorNode<I, O>) root.parent;
-            parent.children.put(accessor, root);
+        if (root.parent != null) {
+            O accessor = findAccessorToFather(root);
+            if (accessor != null) {
+                MooreDiscriminatorNode<I, O> parent = (MooreDiscriminatorNode<I, O>) root.parent;
+                parent.children.put(accessor, root);
+            }
         }
         Map<O, DiscriminationNode<I, O>> children = split(discriminator, root);
         newDiscriminatorNode.children = children;
@@ -210,6 +216,7 @@ public class MooreDiscriminationTree<I, O> extends DiscriminationTree<I, O> {
         }
         return newDiscriminatorNode;
     }
+
 
     private void placeNewLeafInEmptyLeaf(Word<I> discriminator, EmptyDTLeaf<I, O> DTLeaf, TTTNode<I, O> state) {
         MooreDiscriminatorNode<I, O> discriminatorNode = new MooreDiscriminatorNode<>(

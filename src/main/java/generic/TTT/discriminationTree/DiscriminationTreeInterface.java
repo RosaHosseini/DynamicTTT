@@ -93,5 +93,6 @@ public interface DiscriminationTreeInterface<I, O> {
 
     DiscriminatorNode<I, O> getRoot();
 
+    public void draw();
 
 }

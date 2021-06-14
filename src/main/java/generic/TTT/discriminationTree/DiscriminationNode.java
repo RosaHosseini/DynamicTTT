@@ -4,6 +4,8 @@ import generic.modelLearning.MembershipCounter;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Iterator;
+
 public abstract class DiscriminationNode<I, O> {
     public DiscriminatorNode<I, O> parent;
 
@@ -40,4 +42,7 @@ public abstract class DiscriminationNode<I, O> {
      * @return  null if there is not valid any leaf with given sequence access otherwise the leaf
      */
     public abstract @Nullable DTLeaf<I, O> find(Word<I> word);
+
+    public abstract void print(StringBuilder buffer, String prefix, String childrenPrefix);
+
 }

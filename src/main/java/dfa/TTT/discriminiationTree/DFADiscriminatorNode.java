@@ -5,6 +5,7 @@ import generic.TTT.discriminationTree.DiscriminationNode;
 import generic.TTT.discriminationTree.DiscriminatorNode;
 import generic.TTT.discriminationTree.EmptyDTLeaf;
 import generic.modelLearning.MembershipCounter;
+import moore.TTT.discriminiationTree.MooreDiscriminatorNode;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -105,4 +106,24 @@ public class DFADiscriminatorNode<I> extends DiscriminatorNode<I, Boolean> {
         return solidSearch;
     }
 
+
+    public void print(StringBuilder buffer, String prefix, String childrenPrefix) {
+        buffer.append(prefix);
+        buffer.append(discriminator);
+        buffer.append('\n');
+
+        if (solidChild instanceof MooreDiscriminatorNode) {
+            solidChild.print(buffer, childrenPrefix + "|... ", childrenPrefix + "│   ");
+        } else if (!(solidChild instanceof EmptyDTLeaf)) {
+            solidChild.print(buffer, childrenPrefix + "└... ", childrenPrefix + "    ");
+        }
+
+        if (dashedChild instanceof MooreDiscriminatorNode) {
+            dashedChild.print(buffer, childrenPrefix + "├── ", childrenPrefix + "│   ");
+        } else if (!(dashedChild instanceof EmptyDTLeaf)) {
+            dashedChild.print(buffer, childrenPrefix + "└── ", childrenPrefix + "    ");
+        }
+    }
 }
+
+
