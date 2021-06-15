@@ -106,11 +106,10 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
 
             sequence = queue.pollFirst();
             @Nullable Integer id = hypothesis.getState(sequence);
-            if (id != null) {
-                if (id == 38) {
-                    boolean debug = true;
-                }
+            if (sequence.toString().equals("LISTEN SYN(V,V,0) FIN+ACK(V,V,0) ACCEPT CLOSECONNECTION FIN+ACK(V,V,0)")) {
+                boolean debug = true;
             }
+
             if (seen.contains(id))
                 continue;
             if (id != null && states.contains(id)) {
@@ -132,44 +131,37 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                 I transition = sequence.lastSymbol();
                 DTLeaf<I, O> pose = discriminationTree.sift(sequence);
                 TTTNode<I, O> prefixNode = spanningTree.getState(prefixId);
-                if (prefixNode == null) {
-                    boolean debug = true;
-                }
-                try {
-                    Word<I> newSequence = prefixNode.sequenceAccess.append(transition);
-                    if (pose instanceof EmptyDTLeaf) {
-                        TTTNode<I, O> node = findState(newSequence);
-                        if (node == null) {
-                            node = createState(newSequence, false);
-                            boolean result = spanningTree.addState(node);
-                        }
-                        id = node.id;
-                        discriminationTree.discriminate(node, pose);
-                        hypothesis.setTransition(prefixId, transition, node.id);
-                    } else {
-                        if (!states.contains(id)) {
-                            TTTNode<I, O> node = findState(pose.state.sequenceAccess);
-                            if (node == null) {
-                                if (hypothesis.getState(pose.state.sequenceAccess) == null)
-                                    pose.state.id = hypothesis.addState(teacher.membershipQuery(newSequence));
-                                boolean result = spanningTree.addState(pose.state);
-                            } else {
-                                pose.state = node;
-                            }
-                        }
-                        id = pose.state.id;
-                        hypothesis.setTransition(prefixId, transition, id);
+
+                Word<I> newSequence = prefixNode.sequenceAccess.append(transition);
+                if (pose instanceof EmptyDTLeaf) {
+                    TTTNode<I, O> node = findState(newSequence);
+                    if (node == null) {
+                        node = createState(newSequence, false);
+                        boolean result = spanningTree.addState(node);
                     }
-
-                } catch (NullPointerException e) {
-                    boolean debug = true;
+                    id = node.id;
+                    discriminationTree.discriminate(node, pose);
+                    hypothesis.setTransition(prefixId, transition, node.id);
+                } else {
+                    if (!states.contains(id)) {
+                        TTTNode<I, O> node = findState(pose.state.sequenceAccess);
+                        if (node == null) {
+                            if (hypothesis.getState(pose.state.sequenceAccess) == null)
+                                pose.state.id = hypothesis.addState(teacher.membershipQuery(newSequence));
+                            pose.state.sequenceAccess = newSequence;
+                            boolean result = spanningTree.addState(pose.state);
+                        } else {
+                            pose.state = node;
+                        }
+                    }
+                    id = pose.state.id;
+                    hypothesis.setTransition(prefixId, transition, id);
                 }
-            }
-            if (id == null){
-                boolean debug = true;
+
             }
 
-            if (id == 38) {
+
+            if (id == 16 || id == 40) {
                 boolean debug = true;
             }
             if (seen.contains(id))
@@ -179,6 +171,7 @@ public abstract class DynamicTTT<I, O, A extends MutableDeterministic<Integer, I
                 queue.addLast(sequence.append(a));
             }
         }
+
     }
 
     private TTTNode<I, O> findState(Word<I> sequence) {
