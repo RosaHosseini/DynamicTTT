@@ -48,6 +48,9 @@ public class MooreTTT<I, O> extends TTT<I, O, MutableMooreMachine<Integer, I, In
 
     @Override
     public O membershipQuery(Word<I> inputString) {
+        if (getHypothesis().getState(inputString) == null){
+            boolean debug=true;
+        }
         return getHypothesis().getStateOutput(getHypothesis().getState(inputString));
     }
 

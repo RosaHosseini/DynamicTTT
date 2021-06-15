@@ -56,7 +56,6 @@ public abstract class TTT<I, O, A extends MutableDeterministic<Integer, I, Integ
             @Nullable Word<I> ce = teacher.equivalenceQuery(hypothesis, alphabet);
             eqCounter++;
             if (ce == null) {
-//                    finalizeHypothesis();
                 return this.hypothesis;
             }
             System.out.println("counter example " + ce);

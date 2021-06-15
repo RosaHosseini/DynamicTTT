@@ -21,7 +21,7 @@ public class TempSpanningTree<I, O> {
     public TTTNode<I, O> getState(Integer id) {
         for (TTTNode<I, O> node : nodesList) {
             if (node.id == id) {
-                if(removeListContain(node.sequenceAccess))
+                if (!removeListContain(node.sequenceAccess))
                     return node;
                 else
                     return null;
@@ -30,10 +30,11 @@ public class TempSpanningTree<I, O> {
         return null;
     }
 
+
     public TTTNode<I, O> getState(Word<I> accessSequence) {
         for (TTTNode<I, O> node : nodesList) {
-            if (node.sequenceAccess == accessSequence) {
-                if(removeListContain(node.sequenceAccess))
+            if (node.sequenceAccess.equals(accessSequence)) {
+                if (!removeListContain(node.sequenceAccess))
                     return node;
                 else
                     return null;
@@ -43,17 +44,16 @@ public class TempSpanningTree<I, O> {
     }
 
     public boolean contains(Word<I> prefix) {
-        return getState(prefix) == null;
+        return getState(prefix) != null;
     }
 
     private boolean removeListContain(Word<I> prefix) {
         for (TTTNode<I, O> node : removeList) {
             if (node.sequenceAccess.equals(prefix))
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
-
 
     public Iterator<TTTNode<I, O>> getIterator() {
         return new Iterator<TTTNode<I, O>>() {

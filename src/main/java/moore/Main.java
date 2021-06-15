@@ -98,7 +98,8 @@ public class Main {
                 EQ = outdatedTTTLearner.getEQCounter();
                 System.out.println(EQ + ", " + MQ);
 
-                //Dynamic mealy TTT
+
+//              Dynamic mealy TTT
                 f = new File(BASE_BENCHMARK_PATH + updatedPath);
                 System.out.println("Dynamic TTT mealy for " + updatedPath);
                 updateMoorePair = new MooreSULReader().parseModelFromDot(f);

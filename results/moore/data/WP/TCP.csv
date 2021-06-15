@@ -1,0 +1,5 @@
+algorithm,id,num_states,num_alphabet,eq_count,mq_count,distance,duration
+mealy/dynamicTTT,/BenchmarkTCP/TCP_Linux_Server.dot,154,12,1,0,1,8
+mealy/TTT,/BenchmarkTCP/TCP_Linux_Server.dot,154,12,117,10237,1,22430
+mealy/dynamicTTT,/BenchmarkTCP/TCP_FreeBSD_Server.dot,126,13,1,0,1,2
+mealy/TTT,/BenchmarkTCP/TCP_FreeBSD_Server.dot,126,13,104,8746,1,22906
