@@ -6,9 +6,9 @@ import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class DTLeaf<I, O> extends DiscriminationNode<I, O> {
-    public TTTNode<I,O> state;
+    public TTTNode<I, O> state;
 
-    public DTLeaf(DiscriminatorNode<I,O> parent, TTTNode<I,O> node) {
+    public DTLeaf(DiscriminatorNode<I, O> parent, TTTNode<I, O> node) {
         super(parent);
         this.state = node;
     }
@@ -29,8 +29,15 @@ public class DTLeaf<I, O> extends DiscriminationNode<I, O> {
 
     @Override
     public @Nullable DTLeaf<I, O> find(Word<I> word) {
-        if (state.sequenceAccess.equals(word)){
+        if (state.sequenceAccess.equals(word)) {
             return this;
-        }return null;
+        }
+        return null;
+    }
+
+    public void print(StringBuilder buffer, String prefix, String childrenPrefix) {
+        buffer.append(prefix);
+        buffer.append(state.id);
+        buffer.append('\n');
     }
 }

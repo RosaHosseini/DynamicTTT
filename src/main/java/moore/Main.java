@@ -14,7 +14,6 @@ import net.automatalib.commons.util.Pair;
 import net.automatalib.visualization.DefaultVisualizationHelper;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
-import net.automatalib.words.impl.Alphabets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,110 +33,21 @@ public class Main {
         String basePath = "./results/moore/data";
         EQMethod eqMethod = EQMethod.WP;
 
-//        results = test2(OPEN_SSL_CLIENT, OPEN_SSL_CLIENT_MAP, eqMethod, false,
-//                "./benchmarks/moore/Nordsec16/client_version_info.csv"
-//        );
-//        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_CLIENT.csv");
+        results = run(OPEN_SSL_CLIENT_MAP, eqMethod, false,
+                "./benchmarks/moore/Nordsec16/client_version_info.csv"
+        );
+        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_CLIENT.csv");
 //
-//        results = test2(OPEN_SSL_SERVER, OPEN_SSL_SERVER_MAP, eqMethod, false,
+//        results = run( OPEN_SSL_SERVER_MAP, eqMethod, false,
 //                "./benchmarks/moore/Nordsec16/server_version_info.csv");
 //        writer.toCSV(results, basePath + "/" + eqMethod + "/OPEN_SSL_SERVER.csv");
 
-        results = test2(OPEN_SSL_SERVER, OPEN_SSL_SERVER_MAP, eqMethod, false, null);
-        writer.toCSV(results, basePath + "/" + eqMethod + "/MQTT.csv");
-
-
-    }
-
-
-    private static Pair<CompactMoore<String, String>, Alphabet<String>> generateOutdatedModel() {
-        String[] symbols = new String[]{"a", "b"};
-        Alphabet<String> alphabet = Alphabets.fromArray(symbols);
-        String[] outputSymbols = new String[]{"true", "false"};
-        Alphabet<String> outputAlphabet = Alphabets.fromArray(outputSymbols);
-        CompactMoore<String, String> moore = new CompactMoore<>(alphabet);
-        Integer q0 = moore.addInitialState();
-        Integer q1 = moore.addState();
-        Integer q2 = moore.addState();
-        moore.addTransition(q0, "b", q0);
-        moore.addTransition(q1, "b", q1);
-        moore.addTransition(q2, "b", q2);
-        moore.addTransition(q0, "a", q1);
-        moore.addTransition(q1, "a", q2);
-        moore.addTransition(q2, "a", q0);
-        moore.setStateOutput(q0, "false");
-        moore.setStateOutput(q1, "false");
-        moore.setStateOutput(q2, "true");
-        return Pair.of(moore, outputAlphabet);
+//        results = run(TCP_MAP, eqMethod, false, null);
+//        writer.toCSV(results, basePath + "/" + eqMethod + "/TCP.csv");
 
     }
 
-    private static Pair<CompactMoore<String, String>, Alphabet<String>> generateUpdatedModel() {
-        String[] symbols = new String[]{"a", "b"};
-        Alphabet<String> alphabet = Alphabets.fromArray(symbols);
-        String[] outputSymbols = new String[]{"true", "false"};
-        Alphabet<String> outputAlphabet = Alphabets.fromArray(outputSymbols);
-        CompactMoore<String, String> moore = new CompactMoore<>(alphabet);
-        Integer q0 = moore.addInitialState();
-        Integer q1 = moore.addState();
-        Integer q2 = moore.addState();
-        Integer q3 = moore.addState();
-        moore.addTransition(q0, "b", q0);
-        moore.addTransition(q1, "b", q1);
-        moore.addTransition(q2, "b", q3);
-        moore.addTransition(q3, "b", q3);
-        moore.addTransition(q0, "a", q1);
-        moore.addTransition(q1, "a", q2);
-        moore.addTransition(q2, "a", q0);
-        moore.addTransition(q3, "a", q0);
-        moore.setStateOutput(q0, "false");
-        moore.setStateOutput(q1, "false");
-        moore.setStateOutput(q2, "false");
-        moore.setStateOutput(q3, "true");
-        return Pair.of(moore, outputAlphabet);
-    }
-
-    public static void test() throws Exception {
-        boolean withMemory = true;
-
-        Pair<CompactMoore<String, String>, Alphabet<String>> moore = generateOutdatedModel();
-        MooreTeacher<String, String> teacher = new MooreTeacher<>(moore.getFirst(), EQMethod.W, withMemory);
-        MooreTTT<String, String> tttLearner = new MooreTTT<>(teacher, moore.getFirst().getInputAlphabet(), moore.getSecond());
-        MutableMooreMachine<Integer, String, Integer, String> hypothesis = tttLearner.learn();
-        if (hypothesis == null)
-            throw new Exception("error in outdated ttt");
-        System.out.println(teacher.getMQCount() + ", " + tttLearner.getEQCounter());
-        System.out.println("-------------------------------------------------");
-
-        Pair<CompactMoore<String, String>, Alphabet<String>> moore2 = generateUpdatedModel();
-        MooreTeacher<String, String> teacher2 = new MooreTeacher<>(moore2.getFirst(), EQMethod.W, withMemory);
-        MooreDynamicTTT<String, String> dynamicLearner = new MooreDynamicTTT<>(
-                teacher2,
-                tttLearner.getSpanningTree(),
-                tttLearner.getDiscriminationTree(),
-                moore2.getFirst().getInputAlphabet(),
-                new CompactMoore<>(moore2.getFirst().getInputAlphabet()),
-                moore2.getSecond(),
-                false
-        );
-        MutableMooreMachine<Integer, String, Integer, String> hypothesis2 = dynamicLearner.learn();
-        if (hypothesis2 == null)
-            throw new Exception("error in dynamic dfa.TTT");
-        System.out.println(teacher2.getMQCount() + ", " + dynamicLearner.getEQCounter());
-        System.out.println("-------------------------------------------------");
-
-
-        MooreTeacher<String, String> teacher3 = new MooreTeacher<>(moore2.getFirst(), EQMethod.W, withMemory);
-        MooreTTT<String, String> ttt2 = new MooreTTT<>(teacher3, moore2.getFirst().getInputAlphabet(), moore2.getSecond());
-        MutableMooreMachine<Integer, String, Integer, String> hypothesis3 = ttt2.learn();
-        if (hypothesis3 == null)
-            throw new Exception("error in updated dfa.TTT");
-        System.out.println(teacher3.getMQCount() + ", " + ttt2.getEQCounter());
-        System.out.println("-------------------------------------------------");
-    }
-
-
-    public static List<ModelLearningInfo> test2(String[] benchmarks, Map<String, String> versionMapper, EQMethod eqOption, Boolean visualize, String versionFile) {
+    public static List<ModelLearningInfo> run(Map<String, String> versionMapper, EQMethod eqOption, Boolean visualize, String versionFile) {
         HashMap<String, String> versions = null;
         if (versionFile != null) {
             versions = new VersionReader().readVersions(versionFile);
@@ -149,10 +59,10 @@ public class Main {
         long MQ, EQ;
         MooreTeacher<String, String> teacher, outdatedTeacher;
 
-        for (String updatedPath : benchmarks) {
+        for (String updatedPath : versionMapper.keySet()) {
             try {
                 String outdatedPath = versionMapper.get(updatedPath);
-                int distance=1;
+                int distance = 1;
                 if (versionFile != null) {
                     String outdatedVersionDate = versions.get(outdatedPath);
                     String updatedVersionDate = versions.get(updatedPath);
@@ -163,7 +73,7 @@ public class Main {
 
 
                     distance = (int) (((updatedDate.getTime() - outdatedDate.getTime()) / 1000) / (60.0 * 60 * 24));
-                } 
+                }
 
 //                outdated mealy TTT
                 f = new File(BASE_BENCHMARK_PATH + outdatedPath);
@@ -188,7 +98,8 @@ public class Main {
                 EQ = outdatedTTTLearner.getEQCounter();
                 System.out.println(EQ + ", " + MQ);
 
-                //Dynamic mealy TTT
+
+//              Dynamic mealy TTT
                 f = new File(BASE_BENCHMARK_PATH + updatedPath);
                 System.out.println("Dynamic TTT mealy for " + updatedPath);
                 updateMoorePair = new MooreSULReader().parseModelFromDot(f);
@@ -248,51 +159,11 @@ public class Main {
             } catch (FileNotFoundException ignored) {
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println(BASE_BENCHMARK_PATH + updatedPath);
+                System.out.println("error in: " + BASE_BENCHMARK_PATH + updatedPath);
             }
         }
         return results;
     }
-
-    public static void testOpenSSLClient() throws Exception {
-        boolean withMemory = true;
-
-        Pair<CompactMoore<String, String>, Alphabet<String>> moore = new MooreSULReader().
-                parseModelFromDot(new File("./benchmarks/moore/Nordsec16/client_098f.dot"));
-        Visualization.visualize(
-                moore.getFirst(),
-                moore.getFirst().getInputAlphabet(),
-                new DefaultVisualizationHelper<>()
-        );
-        MooreTeacher<String, String> teacher = new MooreTeacher<>(moore.getFirst(), EQMethod.WP, withMemory);
-        MooreTTT<String, String> ttt = new MooreTTT<>(teacher, moore.getFirst().getInputAlphabet(), moore.getSecond());
-        MutableMooreMachine<Integer, String, Integer, String> hypothesis = ttt.learn();
-        if (hypothesis == null)
-            throw new Exception("error in open ssl client 0.9.7 mealy TTT");
-        Visualization.visualize(hypothesis, moore.getFirst().getInputAlphabet(), new DefaultVisualizationHelper<>());
-
-        System.out.println("MQ and EQ:");
-        System.out.println(teacher.getMQCount() + ", " + ttt.getEQCounter());
-    }
-
-
-    public static void testToyModel() throws Exception {
-        boolean withMemory = true;
-
-        Pair<CompactMoore<String, String>, Alphabet<String>> moore = new MooreSULReader().
-                parseModelFromDot(new File(BASE_BENCHMARK_PATH + "/Toy.dot"));
-
-        MooreTeacher<String, String> teacher = new MooreTeacher<>(moore.getFirst(), EQMethod.WP, withMemory);
-        MooreTTT<String, String> ttt = new MooreTTT<>(teacher, moore.getFirst().getInputAlphabet(), moore.getSecond());
-        MutableMooreMachine<Integer, String, Integer, String> hypothesis = ttt.learn();
-        if (hypothesis == null)
-            throw new Exception("error in toy mealy TTT");
-        Visualization.visualize(hypothesis, moore.getFirst().getInputAlphabet(), new DefaultVisualizationHelper<>());
-
-        System.out.println("MQ and EQ:");
-        System.out.println(teacher.getMQCount() + ", " + ttt.getEQCounter());
-    }
-
 
     private static long getCurrentTimestamp() {
         return System.currentTimeMillis();

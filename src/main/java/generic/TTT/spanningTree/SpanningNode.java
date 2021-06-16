@@ -5,6 +5,8 @@ import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 class SpanningNode<I, O> {
     HashMap<I, SpanningNode<I, O>> children;
@@ -50,5 +52,21 @@ class SpanningNode<I, O> {
             }
         }
         return null;
+    }
+
+    public void print(StringBuilder buffer, String prefix, String childrenPrefix) {
+        buffer.append(prefix);
+        buffer.append(state.id);
+        buffer.append('\n');
+        Iterator<Map.Entry<I, SpanningNode<I, O>>> it = children.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<I, SpanningNode<I, O>> next = it.next();
+            SpanningNode<I, O> node = next.getValue();
+            if (it.hasNext()) {
+                node.print(buffer, childrenPrefix + "├──── " + next.getKey() + " ──── ", childrenPrefix + "│   ");
+            } else {
+                node.print(buffer, childrenPrefix + "└──── " + next.getKey() + " ──── ", childrenPrefix + "    ");
+            }
+        }
     }
 }

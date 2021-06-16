@@ -10,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -100,6 +101,24 @@ public class MooreDiscriminatorNode<I, O> extends DiscriminatorNode<I, O> {
                 return result;
         }
         return null;
+    }
+
+    public void print(StringBuilder buffer, String prefix, String childrenPrefix) {
+        buffer.append(prefix);
+        buffer.append(discriminator);
+        buffer.append('\n');
+        Iterator<Map.Entry<O, DiscriminationNode<I, O>>> it = children.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<O, DiscriminationNode<I, O>> next = it.next();
+            DiscriminationNode<I, O> node = next.getValue();
+            if(!(it instanceof EmptyDTLeaf)) {
+                if (it.hasNext()) {
+                    node.print(buffer, childrenPrefix + "├──── " + next.getKey() + " ──── ", childrenPrefix + "│        ");
+                } else {
+                    node.print(buffer, childrenPrefix + "└──── " + next.getKey() + " ──── ", childrenPrefix + "         ");
+                }
+            }
+        }
     }
 
 }

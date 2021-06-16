@@ -84,4 +84,13 @@ public abstract class DynamicDiscriminationTree<I, O> implements DiscriminationT
     }
 
     public DiscriminatorNode<I, O> getRoot(){return DT.getRoot();}
+
+    public abstract void removeNode(TTTNode<I,O> node) ;
+
+    public void draw(){
+        StringBuilder buffer = new StringBuilder();
+        getRoot().print(buffer, "", "");
+        System.out.println(buffer.toString());
+    }
+
 }

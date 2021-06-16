@@ -1,8 +1,6 @@
 package generic.TTT.discriminationTree;
 
 import generic.TTT.TTTNode;
-import generic.modelLearning.MembershipCounter;
-import moore.TTT.discriminiationTree.MooreDiscriminatorNode;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -93,5 +91,6 @@ public interface DiscriminationTreeInterface<I, O> {
 
     DiscriminatorNode<I, O> getRoot();
 
+    public void draw();
 
 }

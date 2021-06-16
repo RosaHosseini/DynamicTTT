@@ -1,6 +1,8 @@
 package generic.TTT.spanningTree;
 
+import generic.TTT.TTT;
 import generic.TTT.TTTNode;
+import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayDeque;
@@ -39,6 +41,42 @@ public class SpanningTree<I, O> {
             }
         }
         return listOfNodes;
+    }
+
+    public void draw() {
+        StringBuilder builder = new StringBuilder();
+        root.print(builder, "", "");
+        System.out.println(builder.toString());
+    }
+
+    public @Nullable TTTNode<I, O> findState(Word<I> sequenceAccess) {
+        int count = sequenceAccess.size();
+        SpanningNode<I, O> currNode = root;
+        while (count > 0) {
+            I transition = sequenceAccess.getSymbol(currNode.state.sequenceAccess.size());
+            if (currNode.children.containsKey(transition)) {
+                currNode = currNode.children.get(transition);
+            } else return null;
+            count -= 1;
+        }
+        if (currNode.state.sequenceAccess.equals(sequenceAccess))
+            return currNode.state;
+        return null;
+    }
+
+    public void removeState(Word<I> sequenceAccess){
+        int count = sequenceAccess.size();
+        SpanningNode<I, O> currNode = root;
+        while (count > 1) {
+            I transition = sequenceAccess.getSymbol(currNode.state.sequenceAccess.size());
+            if (currNode.children.containsKey(transition)) {
+                currNode = currNode.children.get(transition);
+            } else return;
+            count -= 1;
+        }
+        if (count == 1){
+            currNode.children.remove(sequenceAccess.lastSymbol());
+        }
     }
 }
 

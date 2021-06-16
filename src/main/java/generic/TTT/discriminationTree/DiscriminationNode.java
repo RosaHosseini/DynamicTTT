@@ -40,4 +40,7 @@ public abstract class DiscriminationNode<I, O> {
      * @return  null if there is not valid any leaf with given sequence access otherwise the leaf
      */
     public abstract @Nullable DTLeaf<I, O> find(Word<I> word);
+
+    public abstract void print(StringBuilder buffer, String prefix, String childrenPrefix);
+
 }

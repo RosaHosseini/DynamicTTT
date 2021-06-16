@@ -12,8 +12,6 @@ import net.automatalib.automata.fsa.DFA;
 import net.automatalib.automata.fsa.impl.compact.CompactDFA;
 import net.automatalib.visualization.DefaultVisualizationHelper;
 import net.automatalib.visualization.Visualization;
-import net.automatalib.words.Alphabet;
-import net.automatalib.words.impl.Alphabets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,108 +28,32 @@ public class Main {
 
         String basePath = "results/dfa/data";
         String[] methods = {
-//                "/random_learnLib",
-//                "/change_tail_learnLib",
-//                "/remove_alphabet_learnLib",
-//                "/add_alphabet_learnLib",
-//                "/remove_state_learnLib",
-//                "/add_state_learnLib",
+                "/random_learnLib",
+                "/change_tail_learnLib",
+                "/remove_alphabet_learnLib",
+                "/add_alphabet_learnLib",
+                "/remove_state_learnLib",
+                "/add_state_learnLib",
         };
-        String method = "/test";
         EQMethod eqMethod = EQMethod.WP;
-//        for (String method : methods) {
+        for (String method : methods) {
 
-//            results = test2(method, 5, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_10a.csv");
-//
-//            results = test2(method, 10, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_10a.csv");
-//
-//            results = test2(method, 50, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_10a.csv");
-//            results = test2(method, 100, eqMethod, false);
-//            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0100s_10a.csv");
-        results = test2(method, 5, eqMethod, false);
-        writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_02a.csv");
-//        }
+            results = run(method, 5, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0005s_10a.csv");
+
+            results = run(method, 10, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0010s_10a.csv");
+
+            results = run(method, 50, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0050s_10a.csv");
+
+            results = run(method, 100, eqMethod, false);
+            writer.toCSV(results, basePath + "/" + eqMethod + method + "/0100s_10a.csv");
+
+        }
     }
 
-
-    private static CompactDFA<String> generateOutdatedModel() {
-        String[] symbols = new String[]{"a", "b"};
-        Alphabet<String> alphabet = Alphabets.fromArray(symbols);
-        CompactDFA<String> dfa = new CompactDFA<>(alphabet);
-        Integer q0 = dfa.addInitialState();
-        Integer q1 = dfa.addState();
-        Integer q2 = dfa.addState();
-        dfa.addTransition(q0, "b", q0);
-        dfa.addTransition(q1, "b", q1);
-        dfa.addTransition(q2, "b", q2);
-        dfa.addTransition(q0, "a", q1);
-        dfa.addTransition(q1, "a", q2);
-        dfa.addTransition(q2, "a", q0);
-        dfa.setAccepting(q2, true);
-        return dfa;
-
-    }
-
-    private static CompactDFA<String> generateUpdatedModel() {
-        String[] symbols = new String[]{"a", "b"};
-        Alphabet<String> alphabet = Alphabets.fromArray(symbols);
-        CompactDFA<String> dfa = new CompactDFA<>(alphabet);
-        Integer q0 = dfa.addInitialState();
-        Integer q1 = dfa.addState();
-        Integer q2 = dfa.addState();
-        Integer q3 = dfa.addState();
-        dfa.addTransition(q0, "b", q0);
-        dfa.addTransition(q1, "b", q1);
-        dfa.addTransition(q2, "b", q3);
-        dfa.addTransition(q3, "b", q3);
-        dfa.addTransition(q0, "a", q1);
-        dfa.addTransition(q1, "a", q2);
-        dfa.addTransition(q2, "a", q0);
-        dfa.addTransition(q3, "a", q0);
-        dfa.setAccepting(q3, true);
-        return dfa;
-    }
-
-    public static void test() throws Exception {
-        CompactDFA<String> dfa = generateOutdatedModel();
-        DFATeacher<String> teacher = new DFATeacher<>(dfa, EQMethod.W, true);
-        DFATTT<String> tttLearner = new DFATTT<>(teacher, dfa.getInputAlphabet());
-        DFA<?, String> hypothesis = tttLearner.learn();
-        if (hypothesis == null)
-            throw new Exception("error in outdated ttt");
-        System.out.println(teacher.getMQCount() + ", " + tttLearner.getEQCounter());
-        System.out.println("-------------------------------------------------");
-
-        CompactDFA<String> dfa2 = generateUpdatedModel();
-        DFATeacher<String> teacher2 = new DFATeacher<>(dfa2, EQMethod.W, true);
-        DFADynamicTTT<String> dynamicLearner = new DFADynamicTTT<>(
-                teacher2,
-                tttLearner.getSpanningTree(),
-                tttLearner.getDiscriminationTree(),
-                dfa2.getInputAlphabet(),
-                new CompactDFA<>(dfa2.getInputAlphabet()),
-                false
-        );
-        DFA<?, String> hypothesis2 = dynamicLearner.learn();
-        if (hypothesis2 == null)
-            throw new Exception("error in dynamic dfa.TTT");
-        System.out.println(teacher2.getMQCount() + ", " + dynamicLearner.getEQCounter());
-        System.out.println("-------------------------------------------------");
-
-
-        DFATeacher<String> teacher3 = new DFATeacher<>(dfa2, EQMethod.W, true);
-        DFATTT<String> ttt2 = new DFATTT<>(teacher3, dfa2.getInputAlphabet());
-        DFA<?, String> hypothesis3 = ttt2.learn();
-        if (hypothesis3 == null)
-            throw new Exception("error in updated dfa.TTT");
-        System.out.println(teacher3.getMQCount() + ", " + ttt2.getEQCounter());
-        System.out.println("-------------------------------------------------");
-    }
-
-    public static List<ModelLearningInfo> test2(String method, int stateNum, EQMethod eqOption, Boolean visualize) {
+    public static List<ModelLearningInfo> run(String method, int stateNum, EQMethod eqOption, Boolean visualize) {
         List<ModelLearningInfo> results = new ArrayList<>();
 
         long start, end;
@@ -234,4 +156,3 @@ public class Main {
     }
 
 }
-
